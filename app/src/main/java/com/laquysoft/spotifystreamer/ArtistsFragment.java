@@ -73,6 +73,8 @@ public class ArtistsFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artists);
         listView.setAdapter(mArtistsAdapter);
+        View empty = rootView.findViewById(R.id.empty);
+        listView.setEmptyView(empty);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.laquysoft.spotifystreamer"
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
