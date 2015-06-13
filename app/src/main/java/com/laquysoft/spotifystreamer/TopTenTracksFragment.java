@@ -99,14 +99,13 @@ public class TopTenTracksFragment extends Fragment {
 
             SpotifyApi api = new SpotifyApi();
 
-// Most (but not all) of the Spotify Web API endpoints require authorisation.
-// If you know you'll only use the ones that don't require authorisation you can skip this step
-            // api.setAccessToken("myAccessToken");
 
             SpotifyService spotify = api.getService();
 
             Map<String,Object> country = new HashMap<>();
-            country.put("country", "IT");
+            String locale = getActivity().getResources().getConfiguration().locale.getCountry();
+            country.put("country", locale);
+
 
             Tracks tracks = spotify.getArtistTopTrack(params[0], country);
             return tracks;
