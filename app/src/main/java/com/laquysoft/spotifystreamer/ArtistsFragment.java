@@ -4,9 +4,11 @@
 package com.laquysoft.spotifystreamer;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  */
 public class ArtistsFragment extends Fragment {
 
+    private final String LOG_TAG = ArtistsFragment.class.getSimpleName();
+
     private ArtistAdapter mArtistsAdapter;
     private EditText artistEditText;
 
@@ -41,8 +45,6 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Add this line in order for this fragment to handle menu events.
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -79,10 +81,11 @@ public class ArtistsFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //String artist = mArtistsAdapter.getItem(position).name;
-                //Intent intent = new Intent(getActivity(), DetailActivity.class)
-                //      .putExtra(Intent.EXTRA_TEXT, forecast);
-                //startActivity(intent);
+                String spotifyId = mArtistsAdapter.getItem(position).id;
+                Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
+                Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
+                     .putExtra(Intent.EXTRA_TEXT, spotifyId);
+                startActivity(intent);
             }
         });
 
@@ -98,7 +101,6 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        //updateArtists();
     }
 
     public class FetchArtistsTask extends AsyncTask<String, Void, List<Artist>> {
