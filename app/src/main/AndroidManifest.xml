@@ -20,7 +20,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".TopTenTracksActivity"></activity>
+        <activity android:name=".TopTenTracksActivity"
+            android:label="Top 10 Tracks"
+            android:parentActivityName="com.laquysoft.spotifystreamer.MainActivity" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.laquysoft.spotifystreamer.MainActivity" />></activity>
     </application>
 
 </manifest>

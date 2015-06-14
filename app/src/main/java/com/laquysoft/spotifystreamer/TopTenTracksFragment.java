@@ -62,11 +62,16 @@ public class TopTenTracksFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String spotifyId = mTracksAdapter.getItem(position).id;
-                Log.i(LOG_TAG, "Click on Track ID " + spotifyId);
-                //Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
-                  //      .putExtra(Intent.EXTRA_TEXT, spotifyId);
-                //startActivity(intent);
+                Track selectedTrack = mTracksAdapter.getItem(position);
+                String trackName = selectedTrack.name;
+                String albumName = selectedTrack.album.name;
+                String largeThumbnail = selectedTrack.album.images.get(0).url;
+                String previewUrl = selectedTrack.preview_url;
+                Log.i(LOG_TAG, "Selected Track " + trackName +
+                    " from Album " + albumName +
+                    " large Thumbnail url " + largeThumbnail +
+                    " previewUrl " + previewUrl);
+
             }
         });
         return rootView;

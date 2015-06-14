@@ -85,6 +85,7 @@ public class ArtistsFragment extends Fragment {
                 Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
                 Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
                      .putExtra(Intent.EXTRA_TEXT, spotifyId);
+                intent.putExtra("artist", mArtistsAdapter.getItem(position).name);
                 startActivity(intent);
             }
         });
