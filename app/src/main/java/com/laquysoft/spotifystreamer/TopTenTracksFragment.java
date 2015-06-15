@@ -5,19 +5,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -41,14 +36,14 @@ public class TopTenTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_top10, container, false);
 
-        // The detail Activity called via intent.  Inspect the intent for forecast data.
+        // The detail Activity called via intent.  Inspect the intent for  data.
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             mSpotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
 
         }
 
-        // The ArrayAdapter will take data from a source and
+        // The TracksAdapter will take data from a source and
         // use it to populate the ListView it's attached to.
         mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, new ArrayList<Track>());
 
@@ -56,8 +51,6 @@ public class TopTenTracksFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);
         listView.setAdapter(mTracksAdapter);
-        View empty = rootView.findViewById(R.id.empty);
-        listView.setEmptyView(empty);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -65,12 +58,22 @@ public class TopTenTracksFragment extends Fragment {
                 Track selectedTrack = mTracksAdapter.getItem(position);
                 String trackName = selectedTrack.name;
                 String albumName = selectedTrack.album.name;
-                String largeThumbnail = selectedTrack.album.images.get(0).url;
+                String largeThumbnail = "";
+                String littleThumbnail = "";
+                if (selectedTrack.album.images != null) {
+                    largeThumbnail = selectedTrack.album.images.get(0).url;
+                    if (selectedTrack.album.images.size() > 1) {
+                        littleThumbnail = selectedTrack.album.images.get(1).url;
+                    } else {
+                        littleThumbnail = largeThumbnail;
+                    }
+                }
                 String previewUrl = selectedTrack.preview_url;
                 Log.i(LOG_TAG, "Selected Track " + trackName +
-                    " from Album " + albumName +
-                    " large Thumbnail url " + largeThumbnail +
-                    " previewUrl " + previewUrl);
+                        " from Album " + albumName +
+                        " large Thumbnail url " + largeThumbnail +
+                        " little Thumbnail url " + littleThumbnail +
+                        " previewUrl " + previewUrl);
 
             }
         });
@@ -107,7 +110,7 @@ public class TopTenTracksFragment extends Fragment {
 
             SpotifyService spotify = api.getService();
 
-            Map<String,Object> country = new HashMap<>();
+            Map<String, Object> country = new HashMap<String, Object>();
             String locale = getActivity().getResources().getConfiguration().locale.getCountry();
             country.put("country", locale);
 

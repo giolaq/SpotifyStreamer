@@ -43,7 +43,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         viewHolder.name.setText(artist.name);
 
         if ( artist.images.size() > 0 ) {
-            Picasso.with(parent.getContext()).load(artist.images.get(0).url).into(viewHolder.thumbnail);
+            int littleThumbnailPos = artist.images.size() - 1;
+            Picasso.with(parent.getContext()).load(artist.images.get(littleThumbnailPos).url).into(viewHolder.thumbnail);
         }
 
         return convertView;

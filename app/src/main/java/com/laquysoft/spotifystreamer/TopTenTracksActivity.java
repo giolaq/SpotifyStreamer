@@ -15,7 +15,7 @@ public class TopTenTracksActivity  extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-// The detail Activity called via intent.  Inspect the intent for forecast data.
+// The detail Activity called via intent.  Inspect the intent for  data.
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             mArtistName = intent.getStringExtra("artist");

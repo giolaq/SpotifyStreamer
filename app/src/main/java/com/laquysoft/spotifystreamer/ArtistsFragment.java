@@ -15,10 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ import java.util.List;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.Artists;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import retrofit.RetrofitError;
 
 /**
  * Encapsulates fetching the artists and displaying them in a list .
@@ -64,8 +64,9 @@ public class ArtistsFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String artistString = artistEditText.getText().toString();
 
-                    updateArtists();
+                    updateArtists(artistString);
 
                     return true;
                 }
@@ -75,8 +76,6 @@ public class ArtistsFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artists);
         listView.setAdapter(mArtistsAdapter);
-        View empty = rootView.findViewById(R.id.empty);
-        listView.setEmptyView(empty);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -84,7 +83,7 @@ public class ArtistsFragment extends Fragment {
                 String spotifyId = mArtistsAdapter.getItem(position).id;
                 Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
                 Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
-                     .putExtra(Intent.EXTRA_TEXT, spotifyId);
+                        .putExtra(Intent.EXTRA_TEXT, spotifyId);
                 intent.putExtra("artist", mArtistsAdapter.getItem(position).name);
                 startActivity(intent);
             }
@@ -93,10 +92,10 @@ public class ArtistsFragment extends Fragment {
         return rootView;
     }
 
-    private void updateArtists() {
+    private void updateArtists(String query) {
         FetchArtistsTask artistsTask = new FetchArtistsTask();
         String artistString = artistEditText.getText().toString();
-        artistsTask.execute(artistString);
+        artistsTask.execute(query);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class ArtistsFragment extends Fragment {
     public class FetchArtistsTask extends AsyncTask<String, Void, List<Artist>> {
 
         private final String LOG_TAG = FetchArtistsTask.class.getSimpleName();
-
+        private RetrofitError retrofitError;
 
         @Override
         protected List<Artist> doInBackground(String... params) {
@@ -125,8 +124,14 @@ public class ArtistsFragment extends Fragment {
 
             SpotifyService spotify = api.getService();
 
-            ArtistsPager artistsPager = spotify.searchArtists(params[0]);
-            return artistsPager.artists.items;
+            try {
+                ArtistsPager artistsPager = spotify.searchArtists(params[0]);
+                return artistsPager.artists.items;
+
+            } catch (RetrofitError error) {
+                retrofitError = error;
+                return null;
+            }
         }
 
         @Override
@@ -135,7 +140,26 @@ public class ArtistsFragment extends Fragment {
                 mArtistsAdapter.clear();
                 mArtistsAdapter.addAll(result);
                 // New data is back from the server.  Hooray!
+            } else {
+                Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+
             }
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("Query", artistEditText.getText().toString());
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.containsKey("Query")) {
+            updateArtists(savedInstanceState.getString("Query"));
         }
     }
 }

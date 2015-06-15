@@ -43,7 +43,8 @@ public class TracksAdapter extends ArrayAdapter<Track> {
         viewHolder.name.setText(track.name);
 
         if ( track.album.images.size() > 0 ) {
-            Picasso.with(parent.getContext()).load(track.album.images.get(0).url).into(viewHolder.thumbnail);
+            int littleThumbnailPos = track.album.images.size() - 1;
+            Picasso.with(parent.getContext()).load(track.album.images.get(littleThumbnailPos).url).into(viewHolder.thumbnail);
         }
 
         return convertView;
