@@ -15,7 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:hint="Insert Artist Name"
+        android:hint="@string/edittext_suggestion"
         android:maxLength="30"
         android:singleLine="true"/>
     <ListView

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import retrofit.RetrofitError;
 
 /**
  * Created by joaobiriba on 12/06/15.
@@ -95,6 +97,7 @@ public class TopTenTracksFragment extends Fragment {
     public class FetchTopTenTracksTask extends AsyncTask<String, Void, Tracks> {
 
         private final String LOG_TAG = FetchTopTenTracksTask.class.getSimpleName();
+        private RetrofitError retrofitError;
 
 
         @Override
@@ -114,9 +117,13 @@ public class TopTenTracksFragment extends Fragment {
             String locale = getActivity().getResources().getConfiguration().locale.getCountry();
             country.put("country", locale);
 
+            try {
+                return spotify.getArtistTopTrack(params[0], country);
 
-            Tracks tracks = spotify.getArtistTopTrack(params[0], country);
-            return tracks;
+            } catch (RetrofitError error) {
+                retrofitError = error;
+                return null;
+            }
         }
 
         @Override
@@ -125,6 +132,8 @@ public class TopTenTracksFragment extends Fragment {
                 mTracksAdapter.clear();
                 mTracksAdapter.addAll(result.tracks);
                 // New data is back from the server.  Hooray!
+            }else {
+                Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
