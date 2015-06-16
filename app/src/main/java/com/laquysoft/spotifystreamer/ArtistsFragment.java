@@ -24,6 +24,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -38,7 +40,7 @@ public class ArtistsFragment extends Fragment {
     private final String LOG_TAG = ArtistsFragment.class.getSimpleName();
 
     private ArtistAdapter mArtistsAdapter;
-    private SearchView artistSearchView;
+    @InjectView(R.id.search_artist) SearchView artistSearchView;
 
     public ArtistsFragment() {
     }
@@ -58,9 +60,9 @@ public class ArtistsFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.inject(this, rootView);
 
 
-        artistSearchView = (SearchView)rootView.findViewById(R.id.search_artist);
         artistSearchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
                     @Override

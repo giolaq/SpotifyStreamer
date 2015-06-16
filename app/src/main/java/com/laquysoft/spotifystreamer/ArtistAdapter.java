@@ -12,6 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import kaaes.spotify.webapi.android.models.Artist;
 
 /**
@@ -20,9 +22,14 @@ import kaaes.spotify.webapi.android.models.Artist;
 public class ArtistAdapter extends ArrayAdapter<Artist> {
 
 
-    private class ViewHolder {
-        public TextView name;
-        public ImageView thumbnail;
+    static class ViewHolder {
+        @InjectView(R.id.list_item_artist_textview) public TextView name;
+        @InjectView(R.id.thumbnail) public ImageView thumbnail;
+
+
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 
     @Override
@@ -32,9 +39,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
             LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_item_artist, null);
-            viewHolder = new ViewHolder();
-            viewHolder.name = (TextView)convertView.findViewById(R.id.list_item_artist_textview);
-            viewHolder.thumbnail = (ImageView)convertView.findViewById(R.id.thumbnail);
+            viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
