@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Spotify Streamer</string>
-    <string name="edittext_suggestion">Insert Artist Name</string>
+    <string name="query_hint_artist">Insert Artist Name</string>
 </resources>

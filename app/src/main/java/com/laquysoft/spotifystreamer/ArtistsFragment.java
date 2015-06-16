@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,7 +38,7 @@ public class ArtistsFragment extends Fragment {
     private final String LOG_TAG = ArtistsFragment.class.getSimpleName();
 
     private ArtistAdapter mArtistsAdapter;
-    private EditText artistEditText;
+    private SearchView artistSearchView;
 
     public ArtistsFragment() {
     }
@@ -58,21 +59,22 @@ public class ArtistsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        artistEditText = (EditText) rootView.findViewById(R.id.input_artist);
 
-        artistEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    String artistString = artistEditText.getText().toString();
+        artistSearchView = (SearchView)rootView.findViewById(R.id.search_artist);
+        artistSearchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        updateArtists(query);
 
-                    updateArtists(artistString);
+                        return true;
+                    }
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        return false;
+                    }
+                });
 
-                    return true;
-                }
-                return false;
-            }
-        });
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artists);
         listView.setAdapter(mArtistsAdapter);
@@ -94,7 +96,6 @@ public class ArtistsFragment extends Fragment {
 
     private void updateArtists(String query) {
         FetchArtistsTask artistsTask = new FetchArtistsTask();
-        String artistString = artistEditText.getText().toString();
         artistsTask.execute(query);
     }
 
@@ -151,7 +152,7 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("Query", artistEditText.getText().toString());
+        outState.putString("Query", artistSearchView.getQuery().toString());
     }
 
 
