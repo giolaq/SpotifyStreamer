@@ -12,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.laquysoft.spotifystreamer.model.ParcelableTrack;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,8 @@ public class TopTenTracksFragment extends Fragment {
 
     private TracksAdapter mTracksAdapter;
 
+    private ArrayList<ParcelableTrack> trackArrayList;
+
     private String mSpotifyId;
 
     @Override
@@ -38,16 +42,6 @@ public class TopTenTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_top10, container, false);
 
-        // The detail Activity called via intent.  Inspect the intent for  data.
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mSpotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
-
-        }
-
-        // The TracksAdapter will take data from a source and
-        // use it to populate the ListView it's attached to.
-        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, new ArrayList<Track>());
 
 
         // Get a reference to the ListView, and attach this adapter to it.
@@ -57,24 +51,16 @@ public class TopTenTracksFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Track selectedTrack = mTracksAdapter.getItem(position);
-                String trackName = selectedTrack.name;
-                String albumName = selectedTrack.album.name;
-                String largeThumbnail = "";
-                String littleThumbnail = "";
-                if (selectedTrack.album.images != null) {
-                    largeThumbnail = selectedTrack.album.images.get(0).url;
-                    if (selectedTrack.album.images.size() > 1) {
-                        littleThumbnail = selectedTrack.album.images.get(1).url;
-                    } else {
-                        littleThumbnail = largeThumbnail;
-                    }
-                }
-                String previewUrl = selectedTrack.preview_url;
+                ParcelableTrack selectedTrack = mTracksAdapter.getItem(position);
+                String trackName = selectedTrack.trackName;
+                String albumName = selectedTrack.albumName;
+                String largeThumbnail = selectedTrack.largeThumbnailUrl;
+                String smallThumbnailUrl = selectedTrack.smallThumbnailUrl;
+                String previewUrl = selectedTrack.previewUrl;
                 Log.i(LOG_TAG, "Selected Track " + trackName +
                         " from Album " + albumName +
                         " large Thumbnail url " + largeThumbnail +
-                        " little Thumbnail url " + littleThumbnail +
+                        " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
 
             }
@@ -90,7 +76,6 @@ public class TopTenTracksFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateTopTenTracks();
     }
 
 
@@ -130,11 +115,51 @@ public class TopTenTracksFragment extends Fragment {
         protected void onPostExecute(Tracks result) {
             if (result != null) {
                 mTracksAdapter.clear();
-                mTracksAdapter.addAll(result.tracks);
+                for (Track track : result.tracks) {
+                    ParcelableTrack parcelableTrack = new ParcelableTrack(track.name,
+                            track.album.name,
+                            track.album.images.get(0).url,
+                            track.album.images.get(1).url,
+                            track.preview_url);
+                    mTracksAdapter.add(parcelableTrack);
+
+                }
                 // New data is back from the server.  Hooray!
-            }else {
+            } else {
                 Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+        // The detail Activity called via intent.  Inspect the intent for  data.
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+            mSpotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+        }
+        if (savedInstanceState != null) {
+            trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
+        } else {
+            trackArrayList = new ArrayList<ParcelableTrack>();
+            updateTopTenTracks();
+        }
+
+        // The TracksAdapter will take data from a source and
+        // use it to populate the ListView it's attached to.
+        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList);
+
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList("TopTenTracks", trackArrayList);
+    }
+
 }

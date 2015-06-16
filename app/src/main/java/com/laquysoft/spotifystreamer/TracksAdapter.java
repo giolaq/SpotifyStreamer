@@ -8,16 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.laquysoft.spotifystreamer.model.ParcelableTrack;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Track;
-
 /**
  * Created by joaobiriba on 12/06/15.
  */
-public class TracksAdapter extends ArrayAdapter<Track> {
+public class TracksAdapter extends ArrayAdapter<ParcelableTrack> {
 
 
     private class ViewHolder {
@@ -39,12 +38,11 @@ public class TracksAdapter extends ArrayAdapter<Track> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Track track = getItem(position);
-        viewHolder.name.setText(track.name);
+        ParcelableTrack track = getItem(position);
+        viewHolder.name.setText(track.trackName);
 
-        if ( track.album.images.size() > 0 ) {
-            int littleThumbnailPos = track.album.images.size() - 1;
-            Picasso.with(parent.getContext()).load(track.album.images.get(littleThumbnailPos).url).into(viewHolder.thumbnail);
+        if ( track.smallThumbnailUrl != null ) {
+            Picasso.with(parent.getContext()).load(track.smallThumbnailUrl).into(viewHolder.thumbnail);
         }
 
         return convertView;
@@ -52,7 +50,7 @@ public class TracksAdapter extends ArrayAdapter<Track> {
 
 
     public TracksAdapter(Context context, int resource,
-                         List<Track> tracks) {
+                         List<ParcelableTrack> tracks) {
         super(context, resource, tracks);
     }
 }
