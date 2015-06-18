@@ -1,25 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:id="@+id/item_layout">
+    android:paddingTop="@dimen/activity_vertical_margin">
+
     <ImageView
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:contentDescription="Artist Image"/>
+        android:contentDescription="Artist Image"
+        android:src="@android:drawable/btn_star" />
+
     <TextView
+        android:id="@+id/list_item_first_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/thumbnail"
+        android:gravity="center"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="First" />
+
+    <TextView
+        android:id="@+id/list_item_second_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list_item_first_textview"
+        android:layout_toRightOf="@id/thumbnail"
         android:gravity="center"
-        android:id="@+id/list_item_artist_textview" />
-</LinearLayout>
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="Second"
+        android:visibility="gone" />
+</RelativeLayout>

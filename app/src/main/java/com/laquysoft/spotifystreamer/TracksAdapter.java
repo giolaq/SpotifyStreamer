@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.laquysoft.spotifystreamer.model.ParcelableTrack;
+import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,13 +19,22 @@ import butterknife.InjectView;
 /**
  * Created by joaobiriba on 12/06/15.
  */
-public class TracksAdapter extends ArrayAdapter<ParcelableTrack> {
+public class TracksAdapter extends ArrayAdapter<ParcelableSpotifyObject> {
 
+
+    private int mObjectType;
+
+    public static final int VIEW_TYPE_ARTIST = 0;
+    public static final int VIEW_TYPE_TOP_TRACK = 1;
 
 
     static class ViewHolder {
-        @InjectView(R.id.list_item_artist_textview) public TextView name;
-        @InjectView(R.id.thumbnail) public ImageView thumbnail;
+        @InjectView(R.id.list_item_first_textview)
+        public TextView name;
+        @InjectView(R.id.thumbnail)
+        public ImageView thumbnail;
+        @InjectView(R.id.list_item_second_textview)
+        public TextView secondTextLine;
 
 
         public ViewHolder(View view) {
@@ -45,19 +54,26 @@ public class TracksAdapter extends ArrayAdapter<ParcelableTrack> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        ParcelableTrack track = getItem(position);
-        viewHolder.name.setText(track.trackName);
+        ParcelableSpotifyObject track = getItem(position);
 
-        if ( track.smallThumbnailUrl != null ) {
-            Picasso.with(parent.getContext()).load(track.smallThumbnailUrl).into(viewHolder.thumbnail);
+        if (mObjectType == VIEW_TYPE_TOP_TRACK ) {
+            viewHolder.secondTextLine.setVisibility(View.VISIBLE);
+            viewHolder.secondTextLine.setText(track.mFatherName);
         }
 
+
+        viewHolder.name.setText(track.mName);
+
+        if (!track.smallThumbnailUrl.isEmpty()) {
+            Picasso.with(parent.getContext()).load(track.smallThumbnailUrl).into(viewHolder.thumbnail);
+        }
         return convertView;
     }
 
 
     public TracksAdapter(Context context, int resource,
-                         List<ParcelableTrack> tracks) {
+                         List<ParcelableSpotifyObject> tracks, int objectType) {
         super(context, resource, tracks);
+        mObjectType = objectType;
     }
 }

@@ -10,16 +10,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,10 @@ public class ArtistsFragment extends Fragment {
 
     private final String LOG_TAG = ArtistsFragment.class.getSimpleName();
 
-    private ArtistAdapter mArtistsAdapter;
+    private TracksAdapter mArtistsAdapter;
+
+    private ArrayList<ParcelableSpotifyObject> artistArrayList;
+
     @InjectView(R.id.search_artist) SearchView artistSearchView;
 
     public ArtistsFragment() {
@@ -48,16 +49,23 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getActivity().getIntent();
+
+        if (savedInstanceState != null) {
+            artistArrayList = savedInstanceState.getParcelableArrayList("Artists");
+        } else {
+            artistArrayList = new ArrayList<ParcelableSpotifyObject>();
+        }
+
+        mArtistsAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, artistArrayList,
+                TracksAdapter.VIEW_TYPE_ARTIST);
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        // The ArrayAdapter will take data from a source and
-        // use it to populate the ListView it's attached to.
-        mArtistsAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, new ArrayList<Artist>());
-
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.inject(this, rootView);
@@ -84,11 +92,11 @@ public class ArtistsFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String spotifyId = mArtistsAdapter.getItem(position).id;
+                String spotifyId = mArtistsAdapter.getItem(position).mFatherName;
                 Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
                 Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, spotifyId);
-                intent.putExtra("artist", mArtistsAdapter.getItem(position).name);
+                intent.putExtra("artist", mArtistsAdapter.getItem(position).mName);
                 startActivity(intent);
             }
         });
@@ -141,7 +149,23 @@ public class ArtistsFragment extends Fragment {
         protected void onPostExecute(List<Artist> result) {
             if (result != null) {
                 mArtistsAdapter.clear();
-                mArtistsAdapter.addAll(result);
+                String smallImageUrl = "";
+                String bigImageUrl = "";
+                for (Artist track : result) {
+                    if (!track.images.isEmpty()) {
+                        smallImageUrl = track.images.get(0).url;
+                    }
+                    if (track.images.size() > 1 ){
+                        bigImageUrl = track.images.get(1).url;
+                    }
+                    ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
+                            track.id,
+                            smallImageUrl,
+                            bigImageUrl,
+                            track.uri);
+                    mArtistsAdapter.add(parcelableSpotifyObject);
+
+                }
                 // New data is back from the server.  Hooray!
             } else {
                 Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -152,9 +176,10 @@ public class ArtistsFragment extends Fragment {
 
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("Query", artistSearchView.getQuery().toString());
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList("Artists", artistArrayList);
+
     }
 
 
@@ -165,4 +190,6 @@ public class ArtistsFragment extends Fragment {
             updateArtists(savedInstanceState.getString("Query"));
         }
     }
+
+
 }

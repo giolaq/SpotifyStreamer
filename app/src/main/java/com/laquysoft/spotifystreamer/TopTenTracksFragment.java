@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.laquysoft.spotifystreamer.model.ParcelableTrack;
+import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class TopTenTracksFragment extends Fragment {
 
     private TracksAdapter mTracksAdapter;
 
-    private ArrayList<ParcelableTrack> trackArrayList;
+    private ArrayList<ParcelableSpotifyObject> trackArrayList;
 
     private String mSpotifyId;
 
@@ -43,7 +43,6 @@ public class TopTenTracksFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top10, container, false);
 
 
-
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);
         listView.setAdapter(mTracksAdapter);
@@ -51,9 +50,9 @@ public class TopTenTracksFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                ParcelableTrack selectedTrack = mTracksAdapter.getItem(position);
-                String trackName = selectedTrack.trackName;
-                String albumName = selectedTrack.albumName;
+                ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(position);
+                String trackName = selectedTrack.mName;
+                String albumName = selectedTrack.mFatherName;
                 String largeThumbnail = selectedTrack.largeThumbnailUrl;
                 String smallThumbnailUrl = selectedTrack.smallThumbnailUrl;
                 String previewUrl = selectedTrack.previewUrl;
@@ -115,13 +114,21 @@ public class TopTenTracksFragment extends Fragment {
         protected void onPostExecute(Tracks result) {
             if (result != null) {
                 mTracksAdapter.clear();
+                String smallImageUrl = "";
+                String bigImageUrl = "";
                 for (Track track : result.tracks) {
-                    ParcelableTrack parcelableTrack = new ParcelableTrack(track.name,
+                    if (!track.album.images.isEmpty()) {
+                        smallImageUrl = track.album.images.get(0).url;
+                    }
+                    if (track.album.images.size() > 1 ){
+                        bigImageUrl = track.album.images.get(1).url;
+                    }
+                    ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
                             track.album.name,
-                            track.album.images.get(0).url,
-                            track.album.images.get(1).url,
+                            smallImageUrl,
+                            bigImageUrl,
                             track.preview_url);
-                    mTracksAdapter.add(parcelableTrack);
+                    mTracksAdapter.add(parcelableSpotifyObject);
 
                 }
                 // New data is back from the server.  Hooray!
@@ -145,13 +152,13 @@ public class TopTenTracksFragment extends Fragment {
         if (savedInstanceState != null) {
             trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
         } else {
-            trackArrayList = new ArrayList<ParcelableTrack>();
+            trackArrayList = new ArrayList<ParcelableSpotifyObject>();
             updateTopTenTracks();
         }
 
         // The TracksAdapter will take data from a source and
         // use it to populate the ListView it's attached to.
-        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList);
+        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList, TracksAdapter.VIEW_TYPE_TOP_TRACK);
 
 
     }
