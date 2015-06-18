@@ -41,7 +41,8 @@ public class ArtistsFragment extends Fragment {
 
     private ArrayList<ParcelableSpotifyObject> artistArrayList;
 
-    @InjectView(R.id.search_artist) SearchView artistSearchView;
+    @InjectView(R.id.search_artist)
+    SearchView artistSearchView;
 
     public ArtistsFragment() {
     }
@@ -79,6 +80,7 @@ public class ArtistsFragment extends Fragment {
 
                         return true;
                     }
+
                     @Override
                     public boolean onQueryTextChange(String newText) {
                         return false;
@@ -148,27 +150,37 @@ public class ArtistsFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Artist> result) {
             if (result != null) {
-                mArtistsAdapter.clear();
-                String smallImageUrl = "";
-                String bigImageUrl = "";
-                for (Artist track : result) {
-                    if (!track.images.isEmpty()) {
-                        smallImageUrl = track.images.get(0).url;
+                if (result.isEmpty()) {
+                    Toast.makeText(getActivity(), "Artist not found, please refine your search", Toast.LENGTH_LONG).show();
+                } else {
+                    mArtistsAdapter.clear();
+                    String smallImageUrl = "";
+                    String bigImageUrl = "";
+                    for (Artist track : result) {
+                        if (!track.images.isEmpty()) {
+                            smallImageUrl = track.images.get(0).url;
+                        }
+                        if (track.images.size() > 1) {
+                            bigImageUrl = track.images.get(1).url;
+                        }
+                        ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
+                                track.id,
+                                smallImageUrl,
+                                bigImageUrl,
+                                track.uri);
+                        mArtistsAdapter.add(parcelableSpotifyObject);
+
                     }
-                    if (track.images.size() > 1 ){
-                        bigImageUrl = track.images.get(1).url;
-                    }
-                    ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
-                            track.id,
-                            smallImageUrl,
-                            bigImageUrl,
-                            track.uri);
-                    mArtistsAdapter.add(parcelableSpotifyObject);
+                    // New data is back from the server.  Hooray!
+                }
+
+            } else {
+                if (retrofitError != null) {
+                    Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Artist not found, please refine your search", Toast.LENGTH_LONG).show();
 
                 }
-                // New data is back from the server.  Hooray!
-            } else {
-                Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 
             }
         }

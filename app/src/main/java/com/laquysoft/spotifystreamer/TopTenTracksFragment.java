@@ -113,27 +113,32 @@ public class TopTenTracksFragment extends Fragment {
         @Override
         protected void onPostExecute(Tracks result) {
             if (result != null) {
-                mTracksAdapter.clear();
-                String smallImageUrl = "";
-                String bigImageUrl = "";
-                for (Track track : result.tracks) {
-                    if (!track.album.images.isEmpty()) {
-                        smallImageUrl = track.album.images.get(0).url;
-                    }
-                    if (track.album.images.size() > 1 ){
-                        bigImageUrl = track.album.images.get(1).url;
-                    }
-                    ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
-                            track.album.name,
-                            smallImageUrl,
-                            bigImageUrl,
-                            track.preview_url);
-                    mTracksAdapter.add(parcelableSpotifyObject);
+                if (result.tracks.isEmpty()) {
+                    Toast.makeText(getActivity(), "Track not found, please refine your search", Toast.LENGTH_LONG).show();
+                } else {
+                    mTracksAdapter.clear();
+                    String smallImageUrl = "";
+                    String bigImageUrl = "";
+                    for (Track track : result.tracks) {
+                        if (!track.album.images.isEmpty()) {
+                            smallImageUrl = track.album.images.get(0).url;
+                        }
+                        if (track.album.images.size() > 1) {
+                            bigImageUrl = track.album.images.get(1).url;
+                        }
+                        ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
+                                track.album.name,
+                                smallImageUrl,
+                                bigImageUrl,
+                                track.preview_url);
+                        mTracksAdapter.add(parcelableSpotifyObject);
 
+                    }
                 }
                 // New data is back from the server.  Hooray!
             } else {
                 Toast.makeText(getActivity(), "Ooops " + retrofitError.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+
             }
         }
     }
