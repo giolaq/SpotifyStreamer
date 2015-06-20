@@ -4,9 +4,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
@@ -21,16 +23,21 @@ import butterknife.InjectView;
  */
 public class PlayerActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = PlayerActivity.class.getSimpleName();
+
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
     private MediaPlayer mediaPlayer;
 
-    @InjectView(R.id.imageView)
+    @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
 
     @InjectView(R.id.play_button)
     Button playButton;
+
+    @InjectView(R.id.scrubbar)
+    SeekBar scrubBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +68,41 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }
 
+        scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.i(LOG_TAG, "Progress " + progress);
+                if ( mediaPlayer.isPlaying() ) {
+                    mediaPlayer.pause();
+                    mediaPlayer.seekTo(30000/progress);
+                    mediaPlayer.start();
+                } else {
+                    mediaPlayer.seekTo(30000/progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     public void play(View w) {
-        mediaPlayer.start();
+        if (mediaPlayer.isPlaying()) {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0 );
+            mediaPlayer.pause();
+        }
+        else {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0 );
+            mediaPlayer.start();
+        }
     }
 
 }

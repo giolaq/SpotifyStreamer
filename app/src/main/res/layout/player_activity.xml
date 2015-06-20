@@ -4,69 +4,70 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/artistTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Artist"
-        android:id="@+id/textView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="Artist"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
+        android:id="@+id/albumTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/artistTv"
+        android:layout_centerHorizontal="true"
         android:text="Album"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
+        android:id="@+id/albumThumbIm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_below="@+id/textView2"
-        android:src="@drawable/music"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/albumTv"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/music" />
 
     <SeekBar
+        android:id="@+id/scrubbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scrubbar"
-        android:layout_below="@+id/imageView"
-        android:layout_centerHorizontal="true"
-        />
+        android:layout_below="@+id/albumThumbIm"
+        android:maxWidth="300dp"
+        android:minWidth="300dp"
+        android:thumbOffset="10dp"
+        android:layout_centerHorizontal="true" />
 
     <Button
+        android:id="@+id/play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/play_button"
-        android:drawableTop="@android:drawable/ic_media_play"
         android:layout_below="@+id/scrubbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
-        android:onClick="play"/>
+        android:drawableTop="@android:drawable/ic_media_play"
+        android:onClick="play" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/previous_button"
-        android:drawableTop="@android:drawable/ic_media_previous"
-        android:layout_below="@+id/scrubbar"
-        android:layout_toLeftOf="@id/play_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp" />
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/next_button"
-        android:drawableTop="@android:drawable/ic_media_next"
         android:layout_below="@+id/scrubbar"
-        android:layout_toRightOf="@id/play_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp" />
+        android:layout_marginTop="70dp"
+        android:layout_toLeftOf="@id/play_button"
+        android:drawableTop="@android:drawable/ic_media_previous" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/scrubbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"
+        android:layout_toRightOf="@id/play_button"
+        android:drawableTop="@android:drawable/ic_media_next" />
 
 
 </RelativeLayout>
