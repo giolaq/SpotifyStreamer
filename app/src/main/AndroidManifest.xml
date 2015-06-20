@@ -27,6 +27,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.laquysoft.spotifystreamer.MainActivity" />></activity>
+
+        <activity android:name=".PlayerActivity"
+            android:label="Spotify Streamer"
+            android:parentActivityName="com.laquysoft.spotifystreamer.TopTenTracksActivity" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.laquysoft.spotifystreamer.TopTenTracksActivity" />></activity>
     </application>
 
 </manifest>

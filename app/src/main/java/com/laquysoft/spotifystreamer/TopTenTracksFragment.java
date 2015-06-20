@@ -37,6 +37,18 @@ public class TopTenTracksFragment extends Fragment {
 
     private String mSpotifyId;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(ParcelableSpotifyObject selectedTrack);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,6 +73,8 @@ public class TopTenTracksFragment extends Fragment {
                         " large Thumbnail url " + largeThumbnail +
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
+                ((Callback)getActivity())
+                        .onItemSelected(selectedTrack);
 
             }
         });
