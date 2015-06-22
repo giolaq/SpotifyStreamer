@@ -74,10 +74,10 @@ public class PlayerActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "Progress " + progress);
                 if ( mediaPlayer.isPlaying() ) {
                     mediaPlayer.pause();
-                    mediaPlayer.seekTo(30000/progress);
+                    mediaPlayer.seekTo(300*progress);
                     mediaPlayer.start();
                 } else {
-                    mediaPlayer.seekTo(30000/progress);
+                    mediaPlayer.seekTo(300*progress);
                 }
             }
 
