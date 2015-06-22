@@ -62,6 +62,20 @@ public class PlayerActivity extends AppCompatActivity {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 mediaPlayer.setDataSource(url);
+                mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                        if (mp.isPlaying() && scrubBar != null) {
+                            scrubBar.setProgress(mp.getCurrentPosition() / 300);
+                        }
+                    }
+                });
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+                        scrubBar.setProgress(0);
+                    }
+                });
                 mediaPlayer.prepare(); // might take long! (for buffering, etc)
             } catch (IOException e) {
                 e.printStackTrace();
@@ -72,13 +86,16 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.i(LOG_TAG, "Progress " + progress);
-                if ( mediaPlayer.isPlaying() ) {
-                    mediaPlayer.pause();
-                    mediaPlayer.seekTo(300*progress);
-                    mediaPlayer.start();
-                } else {
-                    mediaPlayer.seekTo(300*progress);
+                if (fromUser) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        mediaPlayer.seekTo(300 * progress);
+                        mediaPlayer.start();
+                    } else {
+                        mediaPlayer.seekTo(300 * progress);
+                    }
                 }
+
             }
 
             @Override
@@ -96,11 +113,10 @@ public class PlayerActivity extends AppCompatActivity {
 
     public void play(View w) {
         if (mediaPlayer.isPlaying()) {
-            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0 );
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
             mediaPlayer.pause();
-        }
-        else {
-            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0 );
+        } else {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
             mediaPlayer.start();
         }
     }
