@@ -28,7 +28,7 @@ public class PlayerActivity extends AppCompatActivity {
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
-    private MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -39,6 +39,10 @@ public class PlayerActivity extends AppCompatActivity {
     @InjectView(R.id.scrubbar)
     SeekBar scrubBar;
 
+
+    private int trackProgress = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,39 +51,19 @@ public class PlayerActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         if (savedInstanceState == null) {
-
             trackToPlay = getIntent().getParcelableExtra(TRACK_INFO_KEY);
+        } else {
+            trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
+            trackProgress = savedInstanceState.getInt("Progress");
+            scrubBar.setProgress(trackProgress);
         }
 
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(this).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
 
-
-        if (!trackToPlay.previewUrl.isEmpty()) {
-            String url = trackToPlay.previewUrl;
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            try {
-                mediaPlayer.setDataSource(url);
-                mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                        if (mp.isPlaying() && scrubBar != null) {
-                            scrubBar.setProgress(mp.getCurrentPosition() / 300);
-                        }
-                    }
-                });
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-                        scrubBar.setProgress(0);
-                    }
-                });
-                mediaPlayer.prepare(); // might take long! (for buffering, etc)
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (mediaPlayer == null) {
+            initializeMediaPlayer();
         }
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -121,4 +105,40 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(TRACK_INFO_KEY, trackToPlay);
+        outState.putInt("Progress", scrubBar.getProgress());
+    }
+
+    private void initializeMediaPlayer() {
+        if (!trackToPlay.previewUrl.isEmpty()) {
+            String url = trackToPlay.previewUrl;
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.seekTo(300 * trackProgress);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mediaPlayer.setDataSource(url);
+                mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                        if (mp.isPlaying() && scrubBar != null) {
+                            scrubBar.setProgress(mp.getCurrentPosition() / 300);
+                        }
+                    }
+                });
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+                        scrubBar.setProgress(0);
+                    }
+                });
+                mediaPlayer.prepare(); // might take long! (for buffering, etc)
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
