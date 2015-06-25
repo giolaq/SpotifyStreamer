@@ -50,6 +50,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         ButterKnife.inject(this);
 
+
         if (savedInstanceState == null) {
             trackToPlay = getIntent().getParcelableExtra(TRACK_INFO_KEY);
         } else {
@@ -65,6 +66,16 @@ public class PlayerActivity extends AppCompatActivity {
         if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
+            ParcelableSpotifyObject selectedTrack = getIntent().getParcelableExtra(TRACK_INFO_KEY);
+            if ( selectedTrack != null && savedInstanceState == null)
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(selectedTrack.previewUrl);
+                    linkScrubBarToMediaPlayer();
+                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             if (mediaPlayer.isPlaying()) {
                 playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
             } else {
@@ -128,7 +139,7 @@ public class PlayerActivity extends AppCompatActivity {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 mediaPlayer.setDataSource(url);
-               linkScrubBarToMediaPlayer();
+                linkScrubBarToMediaPlayer();
                 mediaPlayer.prepare(); // might take long! (for buffering, etc)
             } catch (IOException e) {
                 e.printStackTrace();
@@ -155,5 +166,5 @@ public class PlayerActivity extends AppCompatActivity {
 
     }
 
-  
+
 }
