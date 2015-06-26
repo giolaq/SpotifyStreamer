@@ -19,7 +19,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
         super.onCreate(savedInstanceState);
 // The detail Activity called via intent.  Inspect the intent for  data.
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+        if (intent != null) {
             mArtistName = intent.getStringExtra("artist");
             getSupportActionBar().setSubtitle(mArtistName);
 
@@ -27,8 +27,15 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
         setContentView(R.layout.activity_top10);
 
         if (savedInstanceState == null) {
+
+            Bundle arguments = new Bundle();
+            arguments.putString("artist", mArtistName);
+
+            TopTenTracksFragment topTenTracksFragment = new TopTenTracksFragment();
+            topTenTracksFragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new TopTenTracksFragment())
+                    .add(R.id.toptentracks_detail_container, topTenTracksFragment)
                     .commit();
         }
     }

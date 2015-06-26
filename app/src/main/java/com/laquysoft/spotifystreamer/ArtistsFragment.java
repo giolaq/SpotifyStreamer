@@ -44,6 +44,18 @@ public class ArtistsFragment extends Fragment {
     @InjectView(R.id.search_artist)
     SearchView artistSearchView;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * ArtistFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(String id, String name);
+    }
+
     public ArtistsFragment() {
     }
 
@@ -95,11 +107,10 @@ public class ArtistsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String spotifyId = mArtistsAdapter.getItem(position).mFatherName;
+                String artistName = mArtistsAdapter.getItem(position).mName;
                 Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
-                Intent intent = new Intent(getActivity(), TopTenTracksActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, spotifyId);
-                intent.putExtra("artist", mArtistsAdapter.getItem(position).mName);
-                startActivity(intent);
+                ((Callback)getActivity())
+                        .onItemSelected(spotifyId,artistName);
             }
         });
 
@@ -150,7 +161,8 @@ public class ArtistsFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Artist> result) {
             if (result != null) {
-                if (result.isEmpty()) {
+                if (result
+                        .isEmpty()) {
                     Toast.makeText(getActivity(), "Artist not found, please refine your search", Toast.LENGTH_LONG).show();
                 } else {
                     mArtistsAdapter.clear();

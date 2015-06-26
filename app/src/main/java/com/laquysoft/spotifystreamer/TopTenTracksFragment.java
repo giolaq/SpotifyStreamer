@@ -161,13 +161,12 @@ public class TopTenTracksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        // The detail Activity called via intent.  Inspect the intent for  data.
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mSpotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mSpotifyId = arguments.getString("artistId");
 
         }
+
         if (savedInstanceState != null) {
             trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
         } else {
