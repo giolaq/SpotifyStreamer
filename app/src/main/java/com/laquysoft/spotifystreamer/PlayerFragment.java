@@ -1,11 +1,16 @@
 package com.laquysoft.spotifystreamer;
 
+import android.app.Dialog;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -21,14 +26,14 @@ import butterknife.InjectView;
 /**
  * Created by joaobiriba on 20/06/15.
  */
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerFragment extends DialogFragment {
 
-    private static final String LOG_TAG = PlayerActivity.class.getSimpleName();
+    private static final String LOG_TAG = PlayerFragment.class.getSimpleName();
 
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
-    private static MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -42,17 +47,35 @@ public class PlayerActivity extends AppCompatActivity {
 
     private int trackProgress = 0;
 
-
+    /** The system calls this only when creating the layout in a dialog. */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.player_activity);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // The only reason you might override this method when using onCreateView() is
+        // to modify any dialog characteristics. For example, the dialog includes a
+        // title by default, but your custom layout might not need it. So here you can
+        // remove the dialog title, but you must call the superclass to get the Dialog.
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        ButterKnife.inject(this);
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        dialog.getWindow().setDimAmount(0.0f);
+
+        return dialog;
+    }
+
+    /** The system calls this to get the DialogFragment's layout, regardless
+     of whether it's being displayed as a dialog or an embedded fragment. */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout to use as dialog or embedded fragment
+        View rootView = inflater.inflate(R.layout.player_activity, container, false);
+
+        ButterKnife.inject(this,rootView);
 
 
         if (savedInstanceState == null) {
-            trackToPlay = getIntent().getParcelableExtra(TRACK_INFO_KEY);
+            trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
             trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
             trackProgress = savedInstanceState.getInt("Progress");
@@ -60,13 +83,13 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
-            Picasso.with(this).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
+            Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
 
         if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
-            ParcelableSpotifyObject selectedTrack = getIntent().getParcelableExtra(TRACK_INFO_KEY);
+            ParcelableSpotifyObject selectedTrack = getActivity().getIntent().getParcelableExtra(TRACK_INFO_KEY);
             if ( selectedTrack != null && savedInstanceState == null)
                 try {
                     mediaPlayer.reset();
@@ -111,6 +134,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
+        return rootView;
     }
 
     public void play(View w) {
@@ -123,13 +147,14 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(TRACK_INFO_KEY, trackToPlay);
         outState.putInt("Progress", scrubBar.getProgress());
     }
+
+
 
     private void initializeMediaPlayer() {
         if (!trackToPlay.previewUrl.isEmpty()) {

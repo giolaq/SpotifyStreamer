@@ -5,8 +5,8 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
         <TextView
             android:id="@+id/artistTv"
@@ -48,31 +48,26 @@
             android:id="@+id/play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/scrubbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="70dp"
             android:drawableTop="@android:drawable/ic_media_play"
-            android:onClick="play" />
+            android:onClick="play"
+            android:layout_below="@+id/scrubbar"
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/previous_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableTop="@android:drawable/ic_media_previous"
             android:layout_below="@+id/scrubbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="70dp"
-            android:layout_toLeftOf="@id/play_button"
-            android:drawableTop="@android:drawable/ic_media_previous" />
+            android:layout_alignStart="@+id/scrubbar" />
 
         <Button
             android:id="@+id/next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableTop="@android:drawable/ic_media_next"
             android:layout_below="@+id/scrubbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="70dp"
-            android:layout_toRightOf="@id/play_button"
-            android:drawableTop="@android:drawable/ic_media_next" />
+            android:layout_alignEnd="@+id/scrubbar" />
 
 
     </RelativeLayout>

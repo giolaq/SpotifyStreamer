@@ -42,7 +42,7 @@ public class TopTenTracksFragment extends Fragment {
      * implement. This mechanism allows activities to be notified of item
      * selections.
      */
-    public interface Callback {
+    public interface PlayerCallback {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
@@ -73,7 +73,7 @@ public class TopTenTracksFragment extends Fragment {
                         " large Thumbnail url " + largeThumbnail +
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
-                ((Callback)getActivity())
+                ((PlayerCallback)getActivity())
                         .onItemSelected(selectedTrack);
 
             }
