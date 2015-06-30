@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
@@ -40,6 +41,15 @@ public class PlayerFragment extends DialogFragment {
 
     @InjectView(R.id.play_button)
     Button playButton;
+
+    @InjectView(R.id.artistTv)
+    TextView artistTv;
+
+    @InjectView(R.id.albumTv)
+    TextView albumTv;
+
+    @InjectView(R.id.trackNameTv)
+    TextView trackNameTv;
 
     @InjectView(R.id.scrubbar)
     SeekBar scrubBar;
@@ -84,6 +94,19 @@ public class PlayerFragment extends DialogFragment {
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
+
+        if (!trackToPlay.mName.isEmpty()) {
+            trackNameTv.setText(trackToPlay.mName);
+        }
+
+        if (!trackToPlay.mFatherName.isEmpty()) {
+            albumTv.setText(trackToPlay.mFatherName);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistTv.setText(trackToPlay.mArtistName);
+        }
+
 
         if (mediaPlayer == null) {
             initializeMediaPlayer();

@@ -39,7 +39,7 @@
             android:id="@+id/scrubbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/albumThumbIm"
+            android:layout_below="@+id/trackNameTv"
             android:layout_centerHorizontal="true"
             android:maxWidth="300dp"
             android:minWidth="300dp"
@@ -69,6 +69,16 @@
             android:drawableTop="@android:drawable/ic_media_next"
             android:layout_below="@+id/scrubbar"
             android:layout_alignEnd="@+id/scrubbar" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:id="@+id/trackNameTv"
+            android:layout_below="@+id/albumThumbIm"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp" />
 
 
     </RelativeLayout>

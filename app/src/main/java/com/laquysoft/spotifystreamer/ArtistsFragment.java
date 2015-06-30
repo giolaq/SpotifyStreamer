@@ -27,6 +27,7 @@ import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import retrofit.RetrofitError;
 
@@ -175,8 +176,11 @@ public class ArtistsFragment extends Fragment {
                         if (track.images.size() > 1) {
                             bigImageUrl = track.images.get(1).url;
                         }
+                        StringBuilder builder = new StringBuilder();
+
                         ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
                                 track.id,
+                                "",
                                 smallImageUrl,
                                 bigImageUrl,
                                 track.uri);

@@ -10,14 +10,16 @@ public class ParcelableSpotifyObject implements Parcelable {
 
     public String mName;
     public String mFatherName;
+    public String mArtistName;
     public String largeThumbnailUrl;
     public String smallThumbnailUrl;
     public String previewUrl;
 
-    public ParcelableSpotifyObject(String name, String mFatherName, String largeThumbnailUrl,
+    public ParcelableSpotifyObject(String name, String mFatherName, String mArtistName, String largeThumbnailUrl,
                                    String smallThumbnailUrl, String previewUrl) {
         this.mName = name;
         this.mFatherName = mFatherName;
+        this.mArtistName = mArtistName;
         this.largeThumbnailUrl = largeThumbnailUrl;
         this.smallThumbnailUrl = smallThumbnailUrl;
         this.previewUrl = previewUrl;
@@ -26,6 +28,7 @@ public class ParcelableSpotifyObject implements Parcelable {
     private ParcelableSpotifyObject(Parcel in) {
         mName = in.readString();
         mFatherName = in.readString();
+        mArtistName = in.readString();
         largeThumbnailUrl = in.readString();
         smallThumbnailUrl = in.readString();
         previewUrl = in.readString();
@@ -53,6 +56,7 @@ public class ParcelableSpotifyObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mName);
         dest.writeString(this.mFatherName);
+        dest.writeString(this.mArtistName);
         dest.writeString(this.largeThumbnailUrl);
         dest.writeString(this.smallThumbnailUrl);
         dest.writeString(this.previewUrl);

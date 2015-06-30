@@ -20,6 +20,7 @@ import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.RetrofitError;
@@ -140,8 +141,14 @@ public class TopTenTracksFragment extends Fragment {
                         if (track.album.images.size() > 1) {
                             bigImageUrl = track.album.images.get(1).url;
                         }
+                        StringBuilder builder = new StringBuilder();
+                        for ( ArtistSimple artist : track.artists) {
+                            if ( builder.length() > 0) builder.append(", ");
+                            builder.append(artist.name);
+                        }
                         ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
                                 track.album.name,
+                                builder.toString(),
                                 smallImageUrl,
                                 bigImageUrl,
                                 track.preview_url);
