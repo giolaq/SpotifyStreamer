@@ -18,6 +18,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
     private String mArtistName;
     private String mSpotifyId;
     private PlayerFragment newFragment;
+    private TopTenTracksFragment topTenTracksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,9 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
             arguments.putString("artist", mArtistName);
             arguments.putString("artistId", mSpotifyId);
 
-            TopTenTracksFragment topTenTracksFragment = new TopTenTracksFragment();
+            newFragment = new PlayerFragment();
+
+            topTenTracksFragment = new TopTenTracksFragment();
             topTenTracksFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
@@ -63,7 +66,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
     @Override
     public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        newFragment = new PlayerFragment();
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
@@ -82,8 +84,27 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
 
     }
 
-    public void play(View w) {
-       newFragment.play(w);
+    @Override
+    public void onNext(ParcelableSpotifyObject selectedTrack) {
+        newFragment.onNext(selectedTrack);
     }
+
+    @Override
+    public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+        newFragment.onPrevious(selectedTrack);
+    }
+
+    public void play(View w) {
+        newFragment.play(w);
+    }
+
+    public void previous(View w) {
+        topTenTracksFragment.loadPrevious();
+    }
+
+    public void next(View w) {
+        topTenTracksFragment.loadNext();
+    }
+
 
 }

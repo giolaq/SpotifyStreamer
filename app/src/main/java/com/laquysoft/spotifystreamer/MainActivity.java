@@ -94,6 +94,16 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
     }
 
+    @Override
+    public void onNext(ParcelableSpotifyObject selectedTrack) {
+
+    }
+
+    @Override
+    public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+
+    }
+
     public void play(View w) {
         newFragment.play(w);
     }

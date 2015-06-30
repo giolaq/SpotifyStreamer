@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -57,7 +56,9 @@ public class PlayerFragment extends DialogFragment {
 
     private int trackProgress = 0;
 
-    /** The system calls this only when creating the layout in a dialog. */
+    /**
+     * The system calls this only when creating the layout in a dialog.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // The only reason you might override this method when using onCreateView() is
@@ -72,15 +73,17 @@ public class PlayerFragment extends DialogFragment {
         return dialog;
     }
 
-    /** The system calls this to get the DialogFragment's layout, regardless
-     of whether it's being displayed as a dialog or an embedded fragment. */
+    /**
+     * The system calls this to get the DialogFragment's layout, regardless
+     * of whether it's being displayed as a dialog or an embedded fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout to use as dialog or embedded fragment
         View rootView = inflater.inflate(R.layout.player_activity, container, false);
 
-        ButterKnife.inject(this,rootView);
+        ButterKnife.inject(this, rootView);
 
 
         if (savedInstanceState == null) {
@@ -112,7 +115,7 @@ public class PlayerFragment extends DialogFragment {
             initializeMediaPlayer();
         } else {
             ParcelableSpotifyObject selectedTrack = getActivity().getIntent().getParcelableExtra(TRACK_INFO_KEY);
-            if ( selectedTrack != null && savedInstanceState == null)
+            if (selectedTrack != null && savedInstanceState == null)
                 try {
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(selectedTrack.previewUrl);
@@ -177,7 +180,6 @@ public class PlayerFragment extends DialogFragment {
     }
 
 
-
     private void initializeMediaPlayer() {
         if (!trackToPlay.previewUrl.isEmpty()) {
             String url = trackToPlay.previewUrl;
@@ -214,4 +216,96 @@ public class PlayerFragment extends DialogFragment {
     }
 
 
+    public void onNext(ParcelableSpotifyObject selectedTrack) {
+
+
+        trackToPlay = selectedTrack;
+
+
+        if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
+        }
+
+        if (!trackToPlay.mName.isEmpty()) {
+            trackNameTv.setText(trackToPlay.mName);
+        }
+
+        if (!trackToPlay.mFatherName.isEmpty()) {
+            albumTv.setText(trackToPlay.mFatherName);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistTv.setText(trackToPlay.mArtistName);
+        }
+
+        scrubBar.setProgress(0);
+
+
+        if (mediaPlayer == null) {
+            initializeMediaPlayer();
+        } else {
+            if (trackToPlay != null)
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
+                    linkScrubBarToMediaPlayer();
+                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            if (mediaPlayer.isPlaying()) {
+                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+            } else {
+                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+            }
+            linkScrubBarToMediaPlayer();
+        }
+
+
+    }
+
+    public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+
+        trackToPlay = selectedTrack;
+
+
+        if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
+        }
+
+        if (!trackToPlay.mName.isEmpty()) {
+            trackNameTv.setText(trackToPlay.mName);
+        }
+
+        if (!trackToPlay.mFatherName.isEmpty()) {
+            albumTv.setText(trackToPlay.mFatherName);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistTv.setText(trackToPlay.mArtistName);
+        }
+
+        scrubBar.setProgress(0);
+
+        if (mediaPlayer == null) {
+            initializeMediaPlayer();
+        } else {
+            if (trackToPlay != null)
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
+                    linkScrubBarToMediaPlayer();
+                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            if (mediaPlayer.isPlaying()) {
+                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+            } else {
+                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+            }
+            linkScrubBarToMediaPlayer();
+        }
+
+    }
 }

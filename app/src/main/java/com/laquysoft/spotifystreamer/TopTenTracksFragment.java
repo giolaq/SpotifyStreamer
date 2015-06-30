@@ -1,6 +1,5 @@
 package com.laquysoft.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -38,6 +37,8 @@ public class TopTenTracksFragment extends Fragment {
 
     private String mSpotifyId;
 
+    private int mSelectedTrackIdx;
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -48,6 +49,10 @@ public class TopTenTracksFragment extends Fragment {
          * DetailFragmentCallback for when an item has been selected.
          */
         public void onItemSelected(ParcelableSpotifyObject selectedTrack);
+
+        public void onNext(ParcelableSpotifyObject selectedTrack);
+
+        public void onPrevious(ParcelableSpotifyObject selectedTrack);
     }
 
     @Override
@@ -63,7 +68,8 @@ public class TopTenTracksFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(position);
+                mSelectedTrackIdx = position;
+                ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
                 String trackName = selectedTrack.mName;
                 String albumName = selectedTrack.mFatherName;
                 String largeThumbnail = selectedTrack.largeThumbnailUrl;
@@ -74,7 +80,7 @@ public class TopTenTracksFragment extends Fragment {
                         " large Thumbnail url " + largeThumbnail +
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
-                ((PlayerCallback)getActivity())
+                ((PlayerCallback) getActivity())
                         .onItemSelected(selectedTrack);
 
             }
@@ -85,6 +91,26 @@ public class TopTenTracksFragment extends Fragment {
     private void updateTopTenTracks() {
         FetchTopTenTracksTask fetchTopTenTracksTask = new FetchTopTenTracksTask();
         fetchTopTenTracksTask.execute(mSpotifyId);
+    }
+
+    public void loadNext() {
+        Log.i(LOG_TAG, "get Count " + mTracksAdapter.getCount());
+        if (mSelectedTrackIdx < mTracksAdapter.getCount()-1) {
+            mSelectedTrackIdx = mSelectedTrackIdx + 1;
+            ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
+            ((PlayerCallback) getActivity())
+                    .onNext(selectedTrack);
+
+        }
+    }
+
+    public void loadPrevious() {
+        if (mSelectedTrackIdx != 0) {
+            mSelectedTrackIdx = mSelectedTrackIdx - 1;
+            ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
+            ((PlayerCallback) getActivity())
+                    .onPrevious(selectedTrack);
+        }
     }
 
     @Override
@@ -142,8 +168,8 @@ public class TopTenTracksFragment extends Fragment {
                             bigImageUrl = track.album.images.get(1).url;
                         }
                         StringBuilder builder = new StringBuilder();
-                        for ( ArtistSimple artist : track.artists) {
-                            if ( builder.length() > 0) builder.append(", ");
+                        for (ArtistSimple artist : track.artists) {
+                            if (builder.length() > 0) builder.append(", ");
                             builder.append(artist.name);
                         }
                         ParcelableSpotifyObject parcelableSpotifyObject = new ParcelableSpotifyObject(track.name,
@@ -153,6 +179,7 @@ public class TopTenTracksFragment extends Fragment {
                                 bigImageUrl,
                                 track.preview_url);
                         mTracksAdapter.add(parcelableSpotifyObject);
+                        mTracksAdapter.notifyDataSetChanged();
 
                     }
                 }
