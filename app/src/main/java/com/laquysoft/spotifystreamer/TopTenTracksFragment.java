@@ -63,6 +63,8 @@ public class TopTenTracksFragment extends Fragment {
 
         if (savedInstanceState != null) {
             trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
+            mSelectedTrackIdx = savedInstanceState.getInt("selectedTrackId");
+
         } else {
             trackArrayList = new ArrayList<ParcelableSpotifyObject>();
         }
@@ -223,6 +225,7 @@ public class TopTenTracksFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putParcelableArrayList("TopTenTracks", trackArrayList);
+        savedInstanceState.putInt("selectedTrackId", mSelectedTrackIdx);
         super.onSaveInstanceState(savedInstanceState);
 
     }

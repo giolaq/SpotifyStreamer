@@ -52,7 +52,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
         } else {
             newFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
             topTenTracksFragment = (TopTenTracksFragment) getSupportFragmentManager().findFragmentByTag("TopTenTracksFragment");
-
         }
     }
 
