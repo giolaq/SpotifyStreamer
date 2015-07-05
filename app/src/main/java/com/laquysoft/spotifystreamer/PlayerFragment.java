@@ -1,7 +1,6 @@
 package com.laquysoft.spotifystreamer;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ import butterknife.InjectView;
 /**
  * Created by joaobiriba on 20/06/15.
  */
-public class PlayerFragment extends DialogFragment {
+public class PlayerFragment extends DialogFragment implements View.OnClickListener {
 
     private static final String LOG_TAG = PlayerFragment.class.getSimpleName();
 
@@ -87,6 +86,8 @@ public class PlayerFragment extends DialogFragment {
         ButterKnife.inject(this, rootView);
 
 
+        playButton.setOnClickListener(this);
+        
         if (savedInstanceState == null) {
             trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
@@ -319,5 +320,14 @@ public class PlayerFragment extends DialogFragment {
         mediaPlayer.reset();
     }
 
-
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.play_button:
+                play(v);
+                break;
+            default:
+                break;
+        }
+    }
 }
