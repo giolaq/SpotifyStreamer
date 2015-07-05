@@ -41,6 +41,12 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @InjectView(R.id.play_button)
     Button playButton;
 
+    @InjectView(R.id.next_button)
+    Button nextButton;
+
+    @InjectView(R.id.previous_button)
+    Button previousButton;
+
     @InjectView(R.id.artistTv)
     TextView artistTv;
 
@@ -55,6 +61,23 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
 
     private int trackProgress = 0;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface PlayerCallback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(ParcelableSpotifyObject selectedTrack);
+
+        public void onNext();
+
+        public void onPrevious();
+    }
+
 
     /**
      * The system calls this only when creating the layout in a dialog.
@@ -87,7 +110,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
 
         playButton.setOnClickListener(this);
-        
+        nextButton.setOnClickListener(this);
+        previousButton.setOnClickListener(this);
+
         if (savedInstanceState == null) {
             trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
@@ -325,6 +350,12 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         switch (v.getId()) {
             case R.id.play_button:
                 play(v);
+                break;
+            case R.id.previous_button:
+                ((PlayerCallback)getActivity()).onPrevious();
+                break;
+            case R.id.next_button:
+                ((PlayerCallback)getActivity()).onNext();
                 break;
             default:
                 break;

@@ -39,21 +39,6 @@ public class TopTenTracksFragment extends Fragment {
 
     private int mSelectedTrackIdx;
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface PlayerCallback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        public void onItemSelected(ParcelableSpotifyObject selectedTrack);
-
-        public void onNext(ParcelableSpotifyObject selectedTrack);
-
-        public void onPrevious(ParcelableSpotifyObject selectedTrack);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,7 +77,7 @@ public class TopTenTracksFragment extends Fragment {
                         " large Thumbnail url " + largeThumbnail +
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
-                ((PlayerCallback) getActivity())
+                ((PlayerFragment.PlayerCallback) getActivity())
                         .onItemSelected(selectedTrack);
 
             }
@@ -105,24 +90,24 @@ public class TopTenTracksFragment extends Fragment {
         fetchTopTenTracksTask.execute(mSpotifyId);
     }
 
-    public void loadNext() {
-        Log.i(LOG_TAG, "get Count " + mTracksAdapter.getCount());
-        if (mSelectedTrackIdx < mTracksAdapter.getCount()-1) {
-            mSelectedTrackIdx = mSelectedTrackIdx + 1;
-            ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
-            ((PlayerCallback) getActivity())
-                    .onNext(selectedTrack);
 
+    public ParcelableSpotifyObject loadNext() {
+        ParcelableSpotifyObject selectedTrack = null;
+        if (mSelectedTrackIdx < mTracksAdapter.getCount() - 1) {
+            mSelectedTrackIdx = mSelectedTrackIdx + 1;
+            selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
         }
+        return selectedTrack;
     }
 
-    public void loadPrevious() {
+    public ParcelableSpotifyObject loadPrevious() {
+        ParcelableSpotifyObject selectedTrack = null;
         if (mSelectedTrackIdx != 0) {
             mSelectedTrackIdx = mSelectedTrackIdx - 1;
-            ParcelableSpotifyObject selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
-            ((PlayerCallback) getActivity())
-                    .onPrevious(selectedTrack);
+            selectedTrack = mTracksAdapter.getItem(mSelectedTrackIdx);
         }
+        return selectedTrack;
+
     }
 
     @Override

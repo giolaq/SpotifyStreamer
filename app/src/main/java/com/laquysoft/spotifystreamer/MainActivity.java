@@ -9,12 +9,13 @@ import android.view.View;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 
-public class MainActivity extends AppCompatActivity implements ArtistsFragment.Callback,TopTenTracksFragment.PlayerCallback {
+public class MainActivity extends AppCompatActivity implements ArtistsFragment.Callback,PlayerFragment.PlayerCallback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private boolean mTwoPane;
     private PlayerFragment newFragment;
+    private TopTenTracksFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +55,11 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
             args.putString("artistId", spotifyId);
             args.putString("artist", "bo");
 
-            TopTenTracksFragment fragment = new TopTenTracksFragment();
+            fragment = new TopTenTracksFragment();
             fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.toptentracks_detail_container, fragment)
+                    .replace(R.id.toptentracks_detail_container, fragment, "TopTenTracksFragment")
                     .commit();
         } else {
             Intent intent = new Intent(this, TopTenTracksActivity.class);
@@ -95,12 +96,17 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     }
 
     @Override
-    public void onNext(ParcelableSpotifyObject selectedTrack) {
+    public void onNext() {
+        ParcelableSpotifyObject track = fragment.loadNext();
+        newFragment.onNext(track);
 
     }
 
     @Override
-    public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+    public void onPrevious() {
+        ParcelableSpotifyObject track = fragment.loadPrevious();
+        newFragment.onPrevious(track);
+
 
     }
 

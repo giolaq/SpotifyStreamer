@@ -13,7 +13,7 @@ import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 /**
  * Created by joaobiriba on 12/06/15.
  */
-public class TopTenTracksActivity extends AppCompatActivity implements TopTenTracksFragment.PlayerCallback {
+public class TopTenTracksActivity extends AppCompatActivity implements PlayerFragment.PlayerCallback {
 
     private String mArtistName;
     private String mSpotifyId;
@@ -89,12 +89,14 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
     }
 
     @Override
-    public void onNext(ParcelableSpotifyObject selectedTrack) {
+    public void onNext() {
+        ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadNext();
         newFragment.onNext(selectedTrack);
     }
 
     @Override
-    public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+    public void onPrevious() {
+        ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadPrevious();
         newFragment.onPrevious(selectedTrack);
     }
 
