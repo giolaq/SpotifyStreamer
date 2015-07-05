@@ -111,4 +111,9 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
     }
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        newFragment.stop();
+    }
 }

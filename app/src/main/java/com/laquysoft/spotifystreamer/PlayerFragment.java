@@ -1,6 +1,7 @@
 package com.laquysoft.spotifystreamer;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ public class PlayerFragment extends DialogFragment {
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
-    private  static MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -114,11 +115,10 @@ public class PlayerFragment extends DialogFragment {
         if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
-            ParcelableSpotifyObject selectedTrack = getActivity().getIntent().getParcelableExtra(TRACK_INFO_KEY);
-            if (selectedTrack != null && savedInstanceState == null)
+            if (trackToPlay != null && !mediaPlayer.isPlaying())
                 try {
                     mediaPlayer.reset();
-                    mediaPlayer.setDataSource(selectedTrack.previewUrl);
+                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
                     linkScrubBarToMediaPlayer();
                     mediaPlayer.prepare(); // might take long! (for buffering, etc)
                 } catch (IOException e) {
@@ -314,4 +314,10 @@ public class PlayerFragment extends DialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
+
+    public void stop() {
+        mediaPlayer.reset();
+    }
+
+
 }
