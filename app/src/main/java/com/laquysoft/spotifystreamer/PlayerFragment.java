@@ -33,7 +33,7 @@ public class PlayerFragment extends DialogFragment {
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
-    private MediaPlayer mediaPlayer;
+    private  static MediaPlayer mediaPlayer;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -163,6 +163,7 @@ public class PlayerFragment extends DialogFragment {
     }
 
     public void play(View w) {
+        playButton = (Button) w;
         if (mediaPlayer.isPlaying()) {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
             mediaPlayer.pause();
@@ -307,5 +308,10 @@ public class PlayerFragment extends DialogFragment {
             linkScrubBarToMediaPlayer();
         }
 
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 }

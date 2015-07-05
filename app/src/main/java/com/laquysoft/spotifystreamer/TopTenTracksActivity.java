@@ -33,21 +33,26 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
         }
         setContentView(R.layout.activity_top10);
 
-
         if (savedInstanceState == null) {
+
+
+            newFragment = new PlayerFragment();
+            topTenTracksFragment = new TopTenTracksFragment();
 
             Bundle arguments = new Bundle();
             arguments.putString("artist", mArtistName);
             arguments.putString("artistId", mSpotifyId);
 
-            newFragment = new PlayerFragment();
 
-            topTenTracksFragment = new TopTenTracksFragment();
             topTenTracksFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_top10, topTenTracksFragment)
+                    .add(R.id.fragment_top10, topTenTracksFragment, "TopTenTracksFragment")
                     .commit();
+        } else {
+            newFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+            topTenTracksFragment = (TopTenTracksFragment) getSupportFragmentManager().findFragmentByTag("TopTenTracksFragment");
+
         }
     }
 
@@ -78,7 +83,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements TopTenTra
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         // To make it fullscreen, use the 'content' root view as the container
         // for the fragment, which is always the root view for the activity
-        transaction.add(android.R.id.content, newFragment)
+        transaction.add(android.R.id.content, newFragment, "PlayerFragment")
                 .addToBackStack(null).commit();
 
 

@@ -61,6 +61,16 @@ public class TopTenTracksFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top10, container, false);
 
 
+        if (savedInstanceState != null) {
+            trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
+        } else {
+            trackArrayList = new ArrayList<ParcelableSpotifyObject>();
+        }
+
+        // The TracksAdapter will take data from a source and
+        // use it to populate the ListView it's attached to.
+        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList, TracksAdapter.VIEW_TYPE_TOP_TRACK);
+
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);
         listView.setAdapter(mTracksAdapter);
@@ -192,8 +202,9 @@ public class TopTenTracksFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -202,23 +213,18 @@ public class TopTenTracksFragment extends Fragment {
         }
 
         if (savedInstanceState != null) {
-            trackArrayList = savedInstanceState.getParcelableArrayList("TopTenTracks");
         } else {
-            trackArrayList = new ArrayList<ParcelableSpotifyObject>();
             updateTopTenTracks();
         }
-
-        // The TracksAdapter will take data from a source and
-        // use it to populate the ListView it's attached to.
-        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList, TracksAdapter.VIEW_TYPE_TOP_TRACK);
 
 
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putParcelableArrayList("TopTenTracks", trackArrayList);
+        super.onSaveInstanceState(savedInstanceState);
+
     }
 
 }
