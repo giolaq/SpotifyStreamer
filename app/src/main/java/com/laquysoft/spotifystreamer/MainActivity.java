@@ -14,8 +14,8 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private boolean mTwoPane;
-    private PlayerFragment newFragment;
-    private TopTenTracksFragment fragment;
+    private PlayerFragment playerFragment;
+    private TopTenTracksFragment topTenTracksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
             // in two-pane mode.
             mTwoPane = true;
             // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
+            // adding or replacing the detail topTenTracksFragment using a
+            // topTenTracksFragment transaction.
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.toptentracks_detail_container, new TopTenTracksFragment())
@@ -49,17 +49,17 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     public void onItemSelected(String spotifyId, String name) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
+            // adding or replacing the detail topTenTracksFragment using a
+            // topTenTracksFragment transaction.
             Bundle args = new Bundle();
             args.putString("artistId", spotifyId);
             args.putString("artist", "bo");
 
-            fragment = new TopTenTracksFragment();
-            fragment.setArguments(args);
+            topTenTracksFragment = new TopTenTracksFragment();
+            topTenTracksFragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.toptentracks_detail_container, fragment, "TopTenTracksFragment")
+                    .replace(R.id.toptentracks_detail_container, topTenTracksFragment, "TopTenTracksFragment")
                     .commit();
         } else {
             Intent intent = new Intent(this, TopTenTracksActivity.class);
@@ -72,24 +72,24 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     @Override
     public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        newFragment = new PlayerFragment();
+        playerFragment = new PlayerFragment();
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
 
-        newFragment.setArguments(bundle);
+        playerFragment.setArguments(bundle);
 
         if (mTwoPane) {
-            // The device is using a large layout, so show the fragment as a dialog
-            newFragment.show(fragmentManager, "dialog");
+            // The device is using a large layout, so show the topTenTracksFragment as a dialog
+            playerFragment.show(fragmentManager, "dialog");
         } else {
-            // The device is smaller, so show the fragment fullscreen
+            // The device is smaller, so show the topTenTracksFragment fullscreen
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             // For a little polish, specify a transition animation
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             // To make it fullscreen, use the 'content' root view as the container
-            // for the fragment, which is always the root view for the activity
-            transaction.add(android.R.id.content, newFragment)
+            // for the topTenTracksFragment, which is always the root view for the activity
+            transaction.add(android.R.id.content, playerFragment)
                     .addToBackStack(null).commit();
         }
 
@@ -97,21 +97,21 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
     @Override
     public void onNext() {
-        ParcelableSpotifyObject track = fragment.loadNext();
-        newFragment.onNext(track);
+        ParcelableSpotifyObject track = topTenTracksFragment.loadNext();
+        playerFragment.onNext(track);
 
     }
 
     @Override
     public void onPrevious() {
-        ParcelableSpotifyObject track = fragment.loadPrevious();
-        newFragment.onPrevious(track);
+        ParcelableSpotifyObject track = topTenTracksFragment.loadPrevious();
+        playerFragment.onPrevious(track);
 
 
     }
 
     public void play(View w) {
-        newFragment.play(w);
+        playerFragment.play(w);
     }
 
 }

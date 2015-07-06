@@ -17,7 +17,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
     private String mArtistName;
     private String mSpotifyId;
-    private PlayerFragment newFragment;
+    private PlayerFragment playerFragment;
     private TopTenTracksFragment topTenTracksFragment;
 
     @Override
@@ -36,7 +36,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         if (savedInstanceState == null) {
 
 
-            newFragment = new PlayerFragment();
+            playerFragment = new PlayerFragment();
             topTenTracksFragment = new TopTenTracksFragment();
 
             Bundle arguments = new Bundle();
@@ -50,7 +50,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
                     .add(R.id.fragment_top10, topTenTracksFragment, "TopTenTracksFragment")
                     .commit();
         } else {
-            newFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+            playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
             topTenTracksFragment = (TopTenTracksFragment) getSupportFragmentManager().findFragmentByTag("TopTenTracksFragment");
         }
     }
@@ -74,7 +74,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         Bundle bundle = new Bundle();
         bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
 
-        newFragment.setArguments(bundle);
+        playerFragment.setArguments(bundle);
 
         // The device is smaller, so show the fragment fullscreen
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -82,7 +82,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         // To make it fullscreen, use the 'content' root view as the container
         // for the fragment, which is always the root view for the activity
-        transaction.add(android.R.id.content, newFragment, "PlayerFragment")
+        transaction.add(android.R.id.content, playerFragment, "PlayerFragment")
                 .addToBackStack(null).commit();
 
 
@@ -91,17 +91,17 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
     @Override
     public void onNext() {
         ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadNext();
-        newFragment.onNext(selectedTrack);
+        playerFragment.onNext(selectedTrack);
     }
 
     @Override
     public void onPrevious() {
         ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadPrevious();
-        newFragment.onPrevious(selectedTrack);
+        playerFragment.onPrevious(selectedTrack);
     }
 
     public void play(View w) {
-        newFragment.play(w);
+        playerFragment.play(w);
     }
 
     public void previous(View w) {
@@ -116,6 +116,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        newFragment.stop();
+        playerFragment.stop();
     }
 }
