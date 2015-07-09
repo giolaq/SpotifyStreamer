@@ -1,6 +1,7 @@
 package com.laquysoft.spotifystreamer;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -33,7 +34,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     public static final String TRACK_INFO_KEY = "selectedTrack";
 
     private ParcelableSpotifyObject trackToPlay;
-    private static MediaPlayer mediaPlayer;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -61,6 +61,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
 
     private int trackProgress = 0;
+
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -138,7 +139,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         }
 
 
-        if (mediaPlayer == null) {
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        getActivity().startService(new Intent("PLAY"));
+
+
+       /* if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
             if (trackToPlay != null && !mediaPlayer.isPlaying())
@@ -184,19 +189,20 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
             }
         });
-
+*/
         return rootView;
     }
 
     public void play(View w) {
         playButton = (Button) w;
-        if (mediaPlayer.isPlaying()) {
+        if (MediaPlayerService.getInstance().isPlaying()) {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            mediaPlayer.pause();
+            MediaPlayerService.getInstance().pauseMusic();
         } else {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            mediaPlayer.start();
+            MediaPlayerService.getInstance().startMusic();
         }
+
     }
 
     @Override
@@ -210,7 +216,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     private void initializeMediaPlayer() {
         if (!trackToPlay.previewUrl.isEmpty()) {
             String url = trackToPlay.previewUrl;
-            mediaPlayer = new MediaPlayer();
+          /*  mediaPlayer = new MediaPlayer();
             mediaPlayer.seekTo(300 * trackProgress);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
@@ -219,13 +225,13 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 mediaPlayer.prepare(); // might take long! (for buffering, etc)
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
     }
 
     private void linkScrubBarToMediaPlayer() {
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+       /* mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
                 if (mp.isPlaying() && scrubBar != null) {
                     scrubBar.setProgress(mp.getCurrentPosition() / 300);
@@ -238,7 +244,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
                 scrubBar.setProgress(0);
             }
-        });
+        });*/
 
     }
 
@@ -267,8 +273,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
         scrubBar.setProgress(0);
 
+        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        getActivity().startService(new Intent("PLAY"));
 
-        if (mediaPlayer == null) {
+       /* if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
             if (trackToPlay != null)
@@ -286,7 +295,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
             }
             linkScrubBarToMediaPlayer();
-        }
+        }*/
 
 
     }
@@ -313,8 +322,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         }
 
         scrubBar.setProgress(0);
+        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        getActivity().startService(new Intent("PLAY"));
 
-        if (mediaPlayer == null) {
+       /* if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {
             if (trackToPlay != null)
@@ -332,7 +344,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
             }
             linkScrubBarToMediaPlayer();
-        }
+        }*/
 
     }
 
@@ -342,7 +354,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     }
 
     public void stop() {
-        mediaPlayer.reset();
+        //mediaPlayer.reset();
     }
 
     @Override
