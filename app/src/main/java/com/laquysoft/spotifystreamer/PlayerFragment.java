@@ -101,6 +101,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     private void updateUI(Intent intent) {
         int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
         scrubBar.setProgress(mPlayerTrackPosition / 300);
+        if (MediaPlayerService.getInstance().isPlaying()) {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+        } else {
+            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+        }
     }
 
     /**
@@ -162,6 +167,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));
 
+
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -182,11 +188,17 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
             }
         });
+
+
         return rootView;
     }
 
     public void play(View w) {
         playButton = (Button) w;
+        handlePlayButton();
+    }
+
+    private void handlePlayButton() {
         if (MediaPlayerService.getInstance().isPlaying()) {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
             MediaPlayerService.getInstance().pauseMusic();
@@ -194,13 +206,12 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
             MediaPlayerService.getInstance().startMusic();
         }
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(TRACK_INFO_KEY,trackToPlay);
+        outState.putParcelable(TRACK_INFO_KEY, trackToPlay);
     }
 
 
