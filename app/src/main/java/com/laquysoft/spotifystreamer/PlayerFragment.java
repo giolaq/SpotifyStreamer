@@ -141,8 +141,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
         } else {
             trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
-            trackProgress = savedInstanceState.getInt("Progress");
-            scrubBar.setProgress(trackProgress);
         }
 
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
@@ -160,7 +158,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         if (!trackToPlay.mArtistName.isEmpty()) {
             artistTv.setText(trackToPlay.mArtistName);
         }
-
 
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));
@@ -203,6 +200,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelable(TRACK_INFO_KEY,trackToPlay);
     }
 
 

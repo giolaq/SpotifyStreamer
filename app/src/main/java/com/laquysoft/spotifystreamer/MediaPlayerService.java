@@ -72,12 +72,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(ACTION_PLAY)) {
-            mMediaPlayer = new MediaPlayer(); // initialize it here
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.setOnErrorListener(this);
-            mMediaPlayer.setOnBufferingUpdateListener(this);
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            initMediaPlayer();
+            if ( mMediaPlayer == null ) {
+                mMediaPlayer = new MediaPlayer(); // initialize it here
+                mMediaPlayer.setOnPreparedListener(this);
+                mMediaPlayer.setOnErrorListener(this);
+                mMediaPlayer.setOnBufferingUpdateListener(this);
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                initMediaPlayer();
+            }
+
         }
         handler.removeCallbacks(sendUpdatesToUI);
         handler.post(sendUpdatesToUI);
