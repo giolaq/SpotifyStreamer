@@ -21,7 +21,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 
     private static final String ACTION_PLAY = "PLAY";
-    private static final String LOG_TAG =  MediaPlayerService.class.getSimpleName();
+    private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
     private static String mUrl;
     private static MediaPlayerService mInstance = null;
 
@@ -63,12 +63,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(ACTION_PLAY)) {
@@ -85,6 +85,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         return START_STICKY;
     }
 
+
+
     private Runnable sendUpdatesToUI = new Runnable() {
         public void run() {
             DisplayLoggingInfo();
@@ -98,6 +100,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         intent.putExtra("mPlayerTrackPosition", getCurrentPosition());
         sendBroadcast(intent);
     }
+
     private void initMediaPlayer() {
         try {
             mMediaPlayer.setDataSource(mUrl);
@@ -125,7 +128,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mBufferPosition = progress;
     }
 
-    /** Called when MediaPlayer is ready */
+    /**
+     * Called when MediaPlayer is ready
+     */
     @Override
     public void onPrepared(MediaPlayer player) {
         // Begin playing music
@@ -145,6 +150,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             mMediaPlayer.release();
         }
         mState = State.Retrieving;
+        handler.removeCallbacks(sendUpdatesToUI);
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -160,7 +166,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public void startMusic() {
-        if (!mState.equals(State.Preparing) &&!mState.equals(State.Retrieving)) {
+        if (!mState.equals(State.Preparing) && !mState.equals(State.Retrieving)) {
             mMediaPlayer.start();
             mState = State.Playing;
             updateNotification(mSongTitle + "(playing)");
@@ -180,8 +186,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public int getCurrentPosition() {
+        int currentPosition = 0;
+        try {
+            currentPosition = mMediaPlayer.getCurrentPosition();
+        }
+        catch (IllegalStateException excp) {
+            Log.d(LOG_TAG, "getCurrentPosition inconsistent state mplayer");
+        }
+
         // Return current position
-        return mMediaPlayer.getCurrentPosition();
+        return currentPosition;
     }
 
     public int getBufferPercentage() {
@@ -216,7 +230,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         setBufferPosition(percent * getMusicDuration() / 100);
     }
 
-    /** Updates the notification. */
+    /**
+     * Updates the notification.
+     */
     void updateNotification(String text) {
         // Notify NotificationManager of new intent
     }
