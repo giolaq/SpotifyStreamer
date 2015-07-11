@@ -1,7 +1,10 @@
 package com.laquysoft.spotifystreamer;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -80,6 +83,30 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(MediaPlayerService.BROADCAST_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateUI(intent);
+        }
+    };
+
+    private void updateUI(Intent intent) {
+        int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition",0);
+        scrubBar.setProgress(mPlayerTrackPosition / 300);
+    }
+
     /**
      * The system calls this only when creating the layout in a dialog.
      */
@@ -143,6 +170,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         getActivity().startService(new Intent("PLAY"));
 
 
+        
        /* if (mediaPlayer == null) {
             initializeMediaPlayer();
         } else {

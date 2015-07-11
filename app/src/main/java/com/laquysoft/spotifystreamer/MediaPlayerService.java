@@ -7,8 +7,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -19,6 +21,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 
     private static final String ACTION_PLAY = "PLAY";
+    private static final String LOG_TAG =  MediaPlayerService.class.getSimpleName();
     private static String mUrl;
     private static MediaPlayerService mInstance = null;
 
@@ -30,6 +33,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     NotificationManager mNotificationManager;
     Notification mNotification = null;
     final int NOTIFICATION_ID = 1;
+
+    private final Handler handler = new Handler();
+    private Intent intent;
+    public static final String BROADCAST_ACTION = "com.laquysoft.spotifystreamer.DISPLAYSEEK";
 
 
     // indicates the state our service:
@@ -52,7 +59,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public void onCreate() {
         mInstance = this;
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        intent = new Intent(BROADCAST_ACTION);
     }
+
+
 
     @Nullable
     @Override
@@ -69,9 +79,25 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             initMediaPlayer();
         }
+        handler.removeCallbacks(sendUpdatesToUI);
+        handler.post(sendUpdatesToUI); // 1 second
+
         return START_STICKY;
     }
 
+    private Runnable sendUpdatesToUI = new Runnable() {
+        public void run() {
+            DisplayLoggingInfo();
+            handler.postDelayed(this, 500); // 0.5 seconds
+        }
+    };
+
+
+    private void DisplayLoggingInfo() {
+        Log.d(LOG_TAG, "DisplayLoggingInfo " + getCurrentPosition());
+        intent.putExtra("mPlayerTrackPosition", getCurrentPosition());
+        sendBroadcast(intent);
+    }
     private void initMediaPlayer() {
         try {
             mMediaPlayer.setDataSource(mUrl);
@@ -155,7 +181,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public int getCurrentPosition() {
         // Return current position
-        return 0;
+        return mMediaPlayer.getCurrentPosition();
     }
 
     public int getBufferPercentage() {
