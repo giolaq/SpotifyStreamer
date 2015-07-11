@@ -163,18 +163,14 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             linkScrubBarToMediaPlayer();
         }
 
+
+*/
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        mediaPlayer.seekTo(300 * progress);
-                        mediaPlayer.start();
-                    } else {
-                        mediaPlayer.seekTo(300 * progress);
-                    }
+                    MediaPlayerService.getInstance().seekMusicTo(300*progress);
                 }
 
             }
@@ -189,7 +185,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
             }
         });
-*/
         return rootView;
     }
 

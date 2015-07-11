@@ -164,6 +164,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public void seekMusicTo(int pos) {
         // Seek music to pos
+        mMediaPlayer.seekTo(pos);
     }
 
     public static MediaPlayerService getInstance() {
