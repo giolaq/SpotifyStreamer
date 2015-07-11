@@ -80,7 +80,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             initMediaPlayer();
         }
         handler.removeCallbacks(sendUpdatesToUI);
-        handler.post(sendUpdatesToUI); // 1 second
+        handler.post(sendUpdatesToUI);
 
         return START_STICKY;
     }
@@ -90,7 +90,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private Runnable sendUpdatesToUI = new Runnable() {
         public void run() {
             DisplayLoggingInfo();
-            handler.postDelayed(this, 500); // 0.5 seconds
+            handler.postDelayed(this, 1000); // 1 second
         }
     };
 

@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     @Override
     public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        stopService(new Intent(this, MediaPlayerService.class));
         playerFragment = new PlayerFragment();
 
         Bundle bundle = new Bundle();

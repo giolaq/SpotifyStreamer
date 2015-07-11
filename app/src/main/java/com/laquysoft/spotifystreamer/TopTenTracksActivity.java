@@ -71,6 +71,8 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
     public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
+        stopService(new Intent(this, MediaPlayerService.class));
+
         Bundle bundle = new Bundle();
         bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
 
