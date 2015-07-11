@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -21,8 +19,6 @@ import android.widget.TextView;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -103,7 +99,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     };
 
     private void updateUI(Intent intent) {
-        int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition",0);
+        int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
         scrubBar.setProgress(mPlayerTrackPosition / 300);
     }
 
@@ -169,36 +165,12 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));
 
-
-        
-       /* if (mediaPlayer == null) {
-            initializeMediaPlayer();
-        } else {
-            if (trackToPlay != null && !mediaPlayer.isPlaying())
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
-                    linkScrubBarToMediaPlayer();
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            if (mediaPlayer.isPlaying()) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            } else {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            }
-            linkScrubBarToMediaPlayer();
-        }
-
-
-*/
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
-                    MediaPlayerService.getInstance().seekMusicTo(300*progress);
+                    MediaPlayerService.getInstance().seekMusicTo(300 * progress);
                 }
 
             }
@@ -231,44 +203,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(TRACK_INFO_KEY, trackToPlay);
-        outState.putInt("Progress", scrubBar.getProgress());
-    }
-
-
-    private void initializeMediaPlayer() {
-        if (!trackToPlay.previewUrl.isEmpty()) {
-            String url = trackToPlay.previewUrl;
-          /*  mediaPlayer = new MediaPlayer();
-            mediaPlayer.seekTo(300 * trackProgress);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            try {
-                mediaPlayer.setDataSource(url);
-                linkScrubBarToMediaPlayer();
-                mediaPlayer.prepare(); // might take long! (for buffering, etc)
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-        }
-
-    }
-
-    private void linkScrubBarToMediaPlayer() {
-       /* mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                if (mp.isPlaying() && scrubBar != null) {
-                    scrubBar.setProgress(mp.getCurrentPosition() / 300);
-                }
-            }
-        });
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-                scrubBar.setProgress(0);
-            }
-        });*/
-
     }
 
 
@@ -300,26 +234,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));
 
-       /* if (mediaPlayer == null) {
-            initializeMediaPlayer();
-        } else {
-            if (trackToPlay != null)
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
-                    linkScrubBarToMediaPlayer();
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            if (mediaPlayer.isPlaying()) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            } else {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            }
-            linkScrubBarToMediaPlayer();
-        }*/
-
 
     }
 
@@ -349,26 +263,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));
 
-       /* if (mediaPlayer == null) {
-            initializeMediaPlayer();
-        } else {
-            if (trackToPlay != null)
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(trackToPlay.previewUrl);
-                    linkScrubBarToMediaPlayer();
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            if (mediaPlayer.isPlaying()) {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            } else {
-                playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            }
-            linkScrubBarToMediaPlayer();
-        }*/
-
     }
 
     @Override
@@ -387,10 +281,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 play(v);
                 break;
             case R.id.previous_button:
-                ((PlayerCallback)getActivity()).onPrevious();
+                ((PlayerCallback) getActivity()).onPrevious();
                 break;
             case R.id.next_button:
-                ((PlayerCallback)getActivity()).onNext();
+                ((PlayerCallback) getActivity()).onNext();
                 break;
             default:
                 break;
