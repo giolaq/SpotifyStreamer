@@ -267,7 +267,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        scrubBar.setProgress(0);
         MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
         MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         getActivity().startService(new Intent("PLAY"));

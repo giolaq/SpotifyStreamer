@@ -4,13 +4,21 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.RemoteViews;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -21,6 +29,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 
     private static final String ACTION_PLAY = "PLAY";
+    private static final String ACTION_NEXT = "NEXT";
+    private static final String ACTION_PREVIOUS = "PREVIOUS";
+
+
     private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
     private static String mUrl;
     private static MediaPlayerService mInstance = null;
@@ -62,7 +74,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         intent = new Intent(BROADCAST_ACTION);
     }
 
-
+    private void handleIntent( Intent intent ) {
+        if( intent != null && intent.getAction() != null ) {
+            if( intent.getAction().equalsIgnoreCase( ACTION_PLAY ) ) {
+                updateNotification("handle intent");
+            } else if( intent.getAction().equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+            } else if( intent.getAction().equalsIgnoreCase( ACTION_NEXT ) ) {
+            }
+        }
+    }
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -72,7 +92,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(ACTION_PLAY)) {
-            if ( mMediaPlayer == null ) {
+            if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer(); // initialize it here
                 mMediaPlayer.setOnPreparedListener(this);
                 mMediaPlayer.setOnErrorListener(this);
@@ -87,7 +107,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         return START_STICKY;
     }
-
 
 
     private Runnable sendUpdatesToUI = new Runnable() {
@@ -192,8 +211,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         int currentPosition = 0;
         try {
             currentPosition = mMediaPlayer.getCurrentPosition();
-        }
-        catch (IllegalStateException excp) {
+        } catch (IllegalStateException excp) {
             Log.d(LOG_TAG, "getCurrentPosition inconsistent state mplayer");
         }
 
@@ -238,6 +256,41 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     void updateNotification(String text) {
         // Notify NotificationManager of new intent
+        // NotificationCompatBuilder is a very convenient way to build backward-compatible
+        // notifications.  Just throw in some data.
+        android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Spotify Streamer")
+                .setContentText(text);
+
+        // Make something interesting happen when the user clicks on the notification.
+        // In this case, opening the app is sufficient.
+        Intent resultIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        Notification notification = mBuilder.build();
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
+            notification.bigContentView = getExpandedView( true, notification );
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+        // NOTIFICATION_ID allows you to update the notification later on.
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
+
+
     }
 
     /**
@@ -255,5 +308,37 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mNotification.flags |= Notification.FLAG_ONGOING_EVENT;
         mNotification.setLatestEventInfo(getApplicationContext(), getResources().getString(R.string.app_name), text, pi);
         startForeground(NOTIFICATION_ID, mNotification);
+    }
+
+    private RemoteViews getExpandedView( boolean isPlaying, Notification notification ) {
+        RemoteViews customView = new RemoteViews( getPackageName(), R.layout.view_notification );
+
+        Picasso.with(getApplicationContext()).load(mSongPicUrl).into(customView, R.id.large_icon, NOTIFICATION_ID, notification);
+
+        customView.setImageViewResource( R.id.large_icon, R.mipmap.ic_launcher );
+        customView.setImageViewResource( R.id.ib_rewind, android.R.drawable.ic_media_previous );
+
+        if( isPlaying )
+            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_pause );
+        else
+            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_play );
+
+        customView.setImageViewResource( R.id.ib_fast_forward, android.R.drawable.ic_media_next );
+
+        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
+
+        intent.setAction( ACTION_PLAY );
+        PendingIntent pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
+        //customView.setOnClickPendingIntent( R.id.ib_play_pause, pendingIntent );
+
+        intent.setAction( ACTION_NEXT );
+        pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
+        //customView.setOnClickPendingIntent( R.id.ib_fast_forward, pendingIntent );
+
+        intent.setAction( ACTION_PREVIOUS );
+        pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
+        //customView.setOnClickPendingIntent( R.id.ib_rewind, pendingIntent );
+
+        return customView;
     }
 }
