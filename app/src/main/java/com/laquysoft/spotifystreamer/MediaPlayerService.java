@@ -258,20 +258,20 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         // Notify NotificationManager of new intent
         // NotificationCompatBuilder is a very convenient way to build backward-compatible
         // notifications.  Just throw in some data.
-        android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+        android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Spotify Streamer")
                 .setContentText(text);
 
         // Make something interesting happen when the user clicks on the notification.
         // In this case, opening the app is sufficient.
-        Intent resultIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        Intent resultIntent = new Intent(this, MediaPlayerService.class);
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
         // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
@@ -283,7 +283,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         Notification notification = mBuilder.build();
 
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
-            notification.bigContentView = getExpandedView( true, notification );
+           notification.bigContentView = getExpandedView( true, notification );
+
+
+
+
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -315,7 +319,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         Picasso.with(getApplicationContext()).load(mSongPicUrl).into(customView, R.id.large_icon, NOTIFICATION_ID, notification);
 
-        customView.setImageViewResource( R.id.large_icon, R.mipmap.ic_launcher );
         customView.setImageViewResource( R.id.ib_rewind, android.R.drawable.ic_media_previous );
 
         if( isPlaying )
@@ -329,15 +332,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         intent.setAction( ACTION_PLAY );
         PendingIntent pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        //customView.setOnClickPendingIntent( R.id.ib_play_pause, pendingIntent );
+        customView.setOnClickPendingIntent( R.id.ib_play_pause, pendingIntent );
 
         intent.setAction( ACTION_NEXT );
         pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        //customView.setOnClickPendingIntent( R.id.ib_fast_forward, pendingIntent );
+        customView.setOnClickPendingIntent( R.id.ib_fast_forward, pendingIntent );
 
         intent.setAction( ACTION_PREVIOUS );
         pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        //customView.setOnClickPendingIntent( R.id.ib_rewind, pendingIntent );
+        customView.setOnClickPendingIntent( R.id.ib_rewind, pendingIntent );
 
         return customView;
     }
