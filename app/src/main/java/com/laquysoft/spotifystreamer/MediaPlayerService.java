@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
@@ -30,9 +29,9 @@ import java.util.ArrayList;
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 
-    private static final String ACTION_PLAY = "PLAY";
-    private static final String ACTION_NEXT = "NEXT";
-    private static final String ACTION_PREVIOUS = "PREVIOUS";
+    public static final String ACTION_PLAY = "PLAY";
+    public static final String ACTION_NEXT = "NEXT";
+    public static final String ACTION_PREVIOUS = "PREVIOUS";
 
 
     private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
@@ -80,13 +79,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         intent = new Intent(BROADCAST_ACTION);
     }
 
-    private void handleIntent( Intent intent ) {
-        if( intent != null && intent.getAction() != null ) {
-            if( intent.getAction().equalsIgnoreCase( ACTION_PLAY ) ) {
+    private void handleIntent(Intent intent) {
+        if (intent != null && intent.getAction() != null) {
+            if (intent.getAction().equalsIgnoreCase(ACTION_PLAY)) {
                 updateNotification("handle intent");
-            } else if( intent.getAction().equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+            } else if (intent.getAction().equalsIgnoreCase(ACTION_PREVIOUS)) {
                 previous();
-            } else if( intent.getAction().equalsIgnoreCase( ACTION_NEXT ) ) {
+            } else if (intent.getAction().equalsIgnoreCase(ACTION_NEXT)) {
                 next();
             }
         }
@@ -94,14 +93,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private void previous() {
         mMediaPlayer.reset();
-        mTrackIdx=mTrackIdx-1;
+        mTrackIdx = mTrackIdx - 1;
         setSong(mTracksList, mTrackIdx);
         initMediaPlayer();
     }
 
     private void next() {
         mMediaPlayer.reset();
-        mTrackIdx=mTrackIdx+1;
+        mTrackIdx = mTrackIdx + 1;
         setSong(mTracksList, mTrackIdx);
         initMediaPlayer();
     }
@@ -114,6 +113,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        handler.removeCallbacks(sendUpdatesToUI);
+
         if (intent.getAction().equals(ACTION_PLAY)) {
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer(); // initialize it here
@@ -122,12 +123,32 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mMediaPlayer.setOnBufferingUpdateListener(this);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 initMediaPlayer();
-            }else if( intent.getAction().equalsIgnoreCase( ACTION_PREVIOUS ) ) {
-
             }
-
+        } else if (intent.getAction().equalsIgnoreCase(ACTION_PREVIOUS)) {
+            if (mMediaPlayer == null) {
+                mMediaPlayer = new MediaPlayer(); // initialize it here
+                mMediaPlayer.setOnPreparedListener(this);
+                mMediaPlayer.setOnErrorListener(this);
+                mMediaPlayer.setOnBufferingUpdateListener(this);
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                //mTrackIdx = mTrackIdx + 1;
+                //setSong(mTracksList, mTrackIdx);
+                initMediaPlayer();
+            }
+        } else if (intent.getAction().equalsIgnoreCase(ACTION_NEXT)) {
+            if (mMediaPlayer == null) {
+                mMediaPlayer = new MediaPlayer(); // initialize it here
+                mMediaPlayer.setOnPreparedListener(this);
+                mMediaPlayer.setOnErrorListener(this);
+                mMediaPlayer.setOnBufferingUpdateListener(this);
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                //mTrackIdx = mTrackIdx + 1;
+                //setSong(mTracksList, mTrackIdx);
+                initMediaPlayer();
+            }
         }
-        handler.removeCallbacks(sendUpdatesToUI);
+
+
         handler.post(sendUpdatesToUI);
 
         return START_STICKY;
@@ -235,7 +256,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public int getCurrentPosition() {
         int currentPosition = 0;
         try {
-            currentPosition = mMediaPlayer.getCurrentPosition();
+            if (mMediaPlayer != null) {
+                currentPosition = mMediaPlayer.getCurrentPosition();
+            }
         } catch (IllegalStateException excp) {
             Log.d(LOG_TAG, "getCurrentPosition inconsistent state mplayer");
         }
@@ -309,11 +332,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         Notification notification = mBuilder.build();
 
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
-           notification.bigContentView = getExpandedView( true, notification );
-
-
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            notification.bigContentView = getExpandedView(true, notification);
 
 
         NotificationManager mNotificationManager =
@@ -341,33 +361,33 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         startForeground(NOTIFICATION_ID, mNotification);
     }
 
-    private RemoteViews getExpandedView( boolean isPlaying, Notification notification ) {
-        RemoteViews customView = new RemoteViews( getPackageName(), R.layout.view_notification );
+    private RemoteViews getExpandedView(boolean isPlaying, Notification notification) {
+        RemoteViews customView = new RemoteViews(getPackageName(), R.layout.view_notification);
 
         Picasso.with(getApplicationContext()).load(mSongPicUrl).into(customView, R.id.large_icon, NOTIFICATION_ID, notification);
 
-        customView.setImageViewResource( R.id.ib_rewind, android.R.drawable.ic_media_previous );
+        customView.setImageViewResource(R.id.ib_rewind, android.R.drawable.ic_media_previous);
 
-        if( isPlaying )
-            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_pause );
+        if (isPlaying)
+            customView.setImageViewResource(R.id.ib_play_pause, android.R.drawable.ic_media_pause);
         else
-            customView.setImageViewResource( R.id.ib_play_pause, android.R.drawable.ic_media_play );
+            customView.setImageViewResource(R.id.ib_play_pause, android.R.drawable.ic_media_play);
 
-        customView.setImageViewResource( R.id.ib_fast_forward, android.R.drawable.ic_media_next );
+        customView.setImageViewResource(R.id.ib_fast_forward, android.R.drawable.ic_media_next);
 
-        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
+        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
 
-        intent.setAction( ACTION_PLAY );
-        PendingIntent pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        customView.setOnClickPendingIntent( R.id.ib_play_pause, pendingIntent );
+        intent.setAction(ACTION_PLAY);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_play_pause, pendingIntent);
 
-        intent.setAction( ACTION_NEXT );
-        pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        customView.setOnClickPendingIntent( R.id.ib_fast_forward, pendingIntent );
+        intent.setAction(ACTION_NEXT);
+        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_fast_forward, pendingIntent);
 
-        intent.setAction( ACTION_PREVIOUS );
-        pendingIntent = PendingIntent.getService( getApplicationContext(), 1, intent, 0 );
-        customView.setOnClickPendingIntent( R.id.ib_rewind, pendingIntent );
+        intent.setAction(ACTION_PREVIOUS);
+        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_rewind, pendingIntent);
 
         return customView;
     }

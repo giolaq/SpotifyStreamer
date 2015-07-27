@@ -184,8 +184,12 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
+        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
+        getActivity().stopService(mpService);
+
         MediaPlayerService.setSong(trackToPlayList, trackIdx);
-        getActivity().startService(new Intent("PLAY"));
+        mpService.setAction(MediaPlayerService.ACTION_PLAY);
+        getActivity().startService(mpService);
 
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -237,6 +241,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     public void onNext(ParcelableSpotifyObject selectedTrack) {
 
+
+        if ( trackIdx == trackToPlayList.size()-1 ) return;
+
         trackIdx = trackIdx + 1;
 
         ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
@@ -261,14 +268,25 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
         scrubBar.setProgress(0);
 
-       // MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-       // MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
+        getActivity().stopService(mpService);
+
+        MediaPlayerService.setSong(trackToPlayList, trackIdx);
+        mpService.setAction(MediaPlayerService.ACTION_NEXT);
+        getActivity().startService(mpService);
+
+
+        // MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        // MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
         //getActivity().startService(new Intent("PLAY"));
 
 
     }
 
     public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+
+
+        if (trackIdx == 0) return;
 
         trackIdx = trackIdx - 1;
 
@@ -293,9 +311,13 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        //MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        //MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
-        //getActivity().startService(new Intent("PLAY"));
+        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
+        getActivity().stopService(mpService);
+
+        MediaPlayerService.setSong(trackToPlayList, trackIdx);
+        mpService.setAction(MediaPlayerService.ACTION_PREVIOUS);
+        getActivity().startService(mpService);
+
 
     }
 
