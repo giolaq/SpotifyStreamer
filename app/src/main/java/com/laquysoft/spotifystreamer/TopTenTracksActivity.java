@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by joaobiriba on 12/06/15.
  */
@@ -36,7 +38,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         if (savedInstanceState == null) {
 
 
-            playerFragment = new PlayerFragment();
+            //playerFragment = new PlayerFragment();
             topTenTracksFragment = new TopTenTracksFragment();
 
             Bundle arguments = new Bundle();
@@ -50,7 +52,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
                     .add(R.id.fragment_top10, topTenTracksFragment, "TopTenTracksFragment")
                     .commit();
         } else {
-            playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+            //playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
             topTenTracksFragment = (TopTenTracksFragment) getSupportFragmentManager().findFragmentByTag("TopTenTracksFragment");
         }
     }
@@ -68,13 +70,15 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
     }
 
     @Override
-    public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
+    public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         stopService(new Intent(this, MediaPlayerService.class));
 
+        playerFragment = new PlayerFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
+        bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
+        bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
 
         playerFragment.setArguments(bundle);
 

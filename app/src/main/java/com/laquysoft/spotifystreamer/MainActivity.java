@@ -9,6 +9,8 @@ import android.view.View;
 
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements ArtistsFragment.Callback,PlayerFragment.PlayerCallback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -70,14 +72,15 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     }
 
     @Override
-    public void onItemSelected(ParcelableSpotifyObject selectedTrack) {
+    public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         stopService(new Intent(this, MediaPlayerService.class));
         playerFragment = new PlayerFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
+        bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
+        bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
 
         playerFragment.setArguments(bundle);
 

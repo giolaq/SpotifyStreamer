@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -31,8 +33,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     private static final String LOG_TAG = PlayerFragment.class.getSimpleName();
 
     public static final String TRACK_INFO_KEY = "selectedTrack";
+    public static final String TRACK_IDX_KEY = "selectedTrackIdx";
 
-    private ParcelableSpotifyObject trackToPlay;
+    private ArrayList<ParcelableSpotifyObject> trackToPlayList;
+    int trackIdx;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -71,7 +75,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(ParcelableSpotifyObject selectedTrack);
+        public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx);
 
         public void onNext();
 
@@ -125,6 +129,19 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         return dialog;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            trackToPlayList = getArguments().getParcelableArrayList(TRACK_INFO_KEY);
+            trackIdx = getArguments().getInt(TRACK_IDX_KEY);
+        } else {
+            trackToPlayList = savedInstanceState.getParcelableArrayList(TRACK_INFO_KEY);
+            trackIdx = savedInstanceState.getInt(TRACK_IDX_KEY);
+        }
+    }
+
     /**
      * The system calls this to get the DialogFragment's layout, regardless
      * of whether it's being displayed as a dialog or an embedded fragment.
@@ -143,11 +160,14 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         previousButton.setOnClickListener(this);
 
         if (savedInstanceState == null) {
-            trackToPlay = getArguments().getParcelable(TRACK_INFO_KEY);
+            trackToPlayList = getArguments().getParcelableArrayList(TRACK_INFO_KEY);
+            trackIdx = getArguments().getInt(TRACK_IDX_KEY);
         } else {
-            trackToPlay = savedInstanceState.getParcelable(TRACK_INFO_KEY);
+            trackToPlayList = savedInstanceState.getParcelableArrayList(TRACK_INFO_KEY);
+            trackIdx = savedInstanceState.getInt(TRACK_IDX_KEY);
         }
 
+        ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
@@ -164,7 +184,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        MediaPlayerService.setSong(trackToPlayList, trackIdx);
         getActivity().startService(new Intent("PLAY"));
 
 
@@ -211,13 +231,15 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(TRACK_INFO_KEY, trackToPlay);
+        outState.putParcelableArrayList(TRACK_INFO_KEY, trackToPlayList);
     }
 
 
     public void onNext(ParcelableSpotifyObject selectedTrack) {
 
+        trackIdx = trackIdx + 1;
 
+        ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
         trackToPlay = selectedTrack;
 
 
@@ -239,14 +261,18 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
         scrubBar.setProgress(0);
 
-        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
-        getActivity().startService(new Intent("PLAY"));
+       // MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+       // MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        //getActivity().startService(new Intent("PLAY"));
 
 
     }
 
     public void onPrevious(ParcelableSpotifyObject selectedTrack) {
+
+        trackIdx = trackIdx - 1;
+
+        ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
 
         trackToPlay = selectedTrack;
 
@@ -267,9 +293,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
-        getActivity().startService(new Intent("PLAY"));
+        //MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
+        //MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
+        //getActivity().startService(new Intent("PLAY"));
 
     }
 

@@ -18,9 +18,11 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
 
+import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by joaobiriba on 06/07/15.
@@ -41,6 +43,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private int mBufferPosition;
     private static String mSongTitle;
     private static String mSongPicUrl;
+
+    private static ArrayList<ParcelableSpotifyObject> mTracksList;
+    private int mTrackIdx;
 
     NotificationManager mNotificationManager;
     Notification mNotification = null;
@@ -71,6 +76,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public void onCreate() {
         mInstance = this;
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mTracksList = new ArrayList<>();
         intent = new Intent(BROADCAST_ACTION);
     }
 
@@ -79,10 +85,27 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             if( intent.getAction().equalsIgnoreCase( ACTION_PLAY ) ) {
                 updateNotification("handle intent");
             } else if( intent.getAction().equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+                previous();
             } else if( intent.getAction().equalsIgnoreCase( ACTION_NEXT ) ) {
+                next();
             }
         }
     }
+
+    private void previous() {
+        mMediaPlayer.reset();
+        mTrackIdx=mTrackIdx-1;
+        setSong(mTracksList, mTrackIdx);
+        initMediaPlayer();
+    }
+
+    private void next() {
+        mMediaPlayer.reset();
+        mTrackIdx=mTrackIdx+1;
+        setSong(mTracksList, mTrackIdx);
+        initMediaPlayer();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -99,6 +122,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mMediaPlayer.setOnBufferingUpdateListener(this);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 initMediaPlayer();
+            }else if( intent.getAction().equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+
             }
 
         }
@@ -232,10 +257,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         return mInstance;
     }
 
-    public static void setSong(String url, String title, String songPicUrl) {
-        mUrl = url;
-        mSongTitle = title;
-        mSongPicUrl = songPicUrl;
+    public static void setSong(ArrayList<ParcelableSpotifyObject> trackList, int idx) {
+        mTracksList = trackList;
+        ParcelableSpotifyObject track = mTracksList.get(idx);
+        mUrl = track.previewUrl;
+        mSongTitle = track.mName;
+        mSongPicUrl = track.largeThumbnailUrl;
     }
 
     public String getSongTitle() {

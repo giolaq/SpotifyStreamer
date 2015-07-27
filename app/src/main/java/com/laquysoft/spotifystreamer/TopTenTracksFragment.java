@@ -78,7 +78,7 @@ public class TopTenTracksFragment extends Fragment {
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
                 ((PlayerFragment.PlayerCallback) getActivity())
-                        .onItemSelected(selectedTrack);
+                        .onItemSelected(trackArrayList,mSelectedTrackIdx);
 
             }
         });
@@ -177,7 +177,6 @@ public class TopTenTracksFragment extends Fragment {
                                 track.preview_url);
                         mTracksAdapter.add(parcelableSpotifyObject);
                         mTracksAdapter.notifyDataSetChanged();
-
                     }
                 }
                 // New data is back from the server.  Hooray!
