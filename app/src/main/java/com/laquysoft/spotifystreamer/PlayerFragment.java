@@ -236,6 +236,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(TRACK_INFO_KEY, trackToPlayList);
+        outState.putInt(TRACK_IDX_KEY, trackIdx);
     }
 
 
