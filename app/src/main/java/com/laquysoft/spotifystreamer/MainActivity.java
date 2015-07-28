@@ -72,6 +72,26 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     }
 
     @Override
+    public void onShowNowPlaying() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+
+        if (mTwoPane) {
+            // The device is using a large layout, so show the topTenTracksFragment as a dialog
+            playerFragment.show(fragmentManager, "dialog");
+        } else {
+            // The device is smaller, so show the topTenTracksFragment fullscreen
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            // For a little polish, specify a transition animation
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            // To make it fullscreen, use the 'content' root view as the container
+            // for the topTenTracksFragment, which is always the root view for the activity
+            transaction.add(android.R.id.content, playerFragment)
+                    .addToBackStack(null).commit();
+        }
+    }
+
+    @Override
     public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 

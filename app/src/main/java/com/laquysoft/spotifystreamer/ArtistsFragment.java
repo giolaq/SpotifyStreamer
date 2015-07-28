@@ -11,6 +11,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,7 +30,6 @@ import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import retrofit.RetrofitError;
 
@@ -55,6 +57,8 @@ public class ArtistsFragment extends Fragment {
          * ArtistFragmentCallback for when an item has been selected.
          */
         public void onItemSelected(String id, String name);
+
+        public void onShowNowPlaying();
     }
 
     public ArtistsFragment() {
@@ -74,8 +78,14 @@ public class ArtistsFragment extends Fragment {
         mArtistsAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, artistArrayList,
                 TracksAdapter.VIEW_TYPE_ARTIST);
 
+        // Add this line in order for this fragment to handle menu events.
+        setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_activity_actions, menu);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,8 +120,8 @@ public class ArtistsFragment extends Fragment {
                 String spotifyId = mArtistsAdapter.getItem(position).mFatherName;
                 String artistName = mArtistsAdapter.getItem(position).mName;
                 Log.i(LOG_TAG, "Click on Artist ID " + spotifyId);
-                ((Callback)getActivity())
-                        .onItemSelected(spotifyId,artistName);
+                ((Callback) getActivity())
+                        .onItemSelected(spotifyId, artistName);
             }
         });
 
@@ -219,5 +229,32 @@ public class ArtistsFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+//        if (id == R.id.action_refresh) {
+//            updateWeather();
+//            return true;
+//        }
+        if (id == R.id.action_now_playing) {
+            openNowPlaying();
+            return true;
+        } else if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openNowPlaying() {
+
+        ((Callback) getActivity())
+                .onShowNowPlaying();
+
+    }
 
 }
