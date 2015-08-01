@@ -82,6 +82,19 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         public void onPrevious();
     }
 
+    /**
+     * Factory method
+     */
+    public static PlayerFragment newInstance(ArrayList<ParcelableSpotifyObject> tracks, int idx) {
+        PlayerFragment fragment = new PlayerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, tracks);
+        bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
+
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
 
     @Override
     public void onResume() {

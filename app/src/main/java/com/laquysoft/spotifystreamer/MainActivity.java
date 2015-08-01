@@ -104,16 +104,12 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        playerFragment = new PlayerFragment();
 
         trackList = selectedTrack;
         trackId = idx;
 
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
-        bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
+        playerFragment = PlayerFragment.newInstance(selectedTrack, idx);
 
-        playerFragment.setArguments(bundle);
 
         if (mTwoPane) {
             // The device is using a large layout, so show the topTenTracksFragment as a dialog

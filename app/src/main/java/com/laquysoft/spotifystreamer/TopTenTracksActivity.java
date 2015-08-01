@@ -38,7 +38,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         if (savedInstanceState == null) {
 
 
-            playerFragment = new PlayerFragment();
             topTenTracksFragment = new TopTenTracksFragment();
 
             Bundle arguments = new Bundle();
@@ -52,7 +51,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
                     .add(R.id.fragment_top10, topTenTracksFragment, "TopTenTracksFragment")
                     .commit();
         } else {
-            playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
             topTenTracksFragment = (TopTenTracksFragment) getSupportFragmentManager().findFragmentByTag("TopTenTracksFragment");
         }
     }
@@ -76,11 +74,8 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        Bundle bundle = new Bundle();
-        bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
-        bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
+        playerFragment = PlayerFragment.newInstance(selectedTrack, idx);
 
-        playerFragment.setArguments(bundle);
 
         // The device is smaller, so show the fragment fullscreen
         FragmentTransaction transaction = fragmentManager.beginTransaction();
