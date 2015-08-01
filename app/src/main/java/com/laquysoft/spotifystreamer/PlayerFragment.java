@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -64,6 +63,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
 
     private int trackProgress = 0;
+    private boolean mPlaying;
 
 
     /**
@@ -86,13 +86,13 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(MediaPlayerService.BROADCAST_ACTION));
+        //getActivity().registerReceiver(broadcastReceiver, new IntentFilter(MediaPlayerService.BROADCAST_ACTION));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(broadcastReceiver);
+        //getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -105,11 +105,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     private void updateUI(Intent intent) {
         int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
         scrubBar.setProgress(mPlayerTrackPosition / 300);
-        if (MediaPlayerService.getInstance().isPlaying()) {
-            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-        } else {
-            playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-        }
+        //if (MediaPlayerService.getInstance().isPlaying()) {
+        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+        //} else {
+        //    playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
+        //}
     }
 
     /**
@@ -167,6 +167,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             trackIdx = savedInstanceState.getInt(TRACK_IDX_KEY);
         }
 
+
         ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
@@ -184,12 +185,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
-        getActivity().stopService(mpService);
+        mPlaying = true;
+        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
 
-        MediaPlayerService.setSong(trackToPlayList, trackIdx);
-        mpService.setAction(MediaPlayerService.ACTION_PLAY);
-        getActivity().startService(mpService);
+        MediaPlayerService.playTrack(getActivity(), trackIdx);
 
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -197,7 +196,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
-                    MediaPlayerService.getInstance().seekMusicTo(300 * progress);
+                    //MediaPlayerService.getInstance().seekMusicTo(300 * progress);
                 }
 
             }
@@ -223,14 +222,16 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     }
 
     private void handlePlayButton() {
-        if (MediaPlayerService.getInstance().isPlaying()) {
+        if (mPlaying) {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-            MediaPlayerService.getInstance().pauseMusic();
+            MediaPlayerService.pauseTrack(getActivity());
         } else {
             playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-            MediaPlayerService.getInstance().startMusic();
+            MediaPlayerService.resumeTrack(getActivity());
         }
+        mPlaying = !mPlaying;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -243,7 +244,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     public void onNext(ParcelableSpotifyObject selectedTrack) {
 
 
-        if ( trackIdx == trackToPlayList.size()-1 ) return;
+        if (trackIdx == trackToPlayList.size() - 1) return;
 
         trackIdx = trackIdx + 1;
 
@@ -269,18 +270,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
         scrubBar.setProgress(0);
 
-        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
-        getActivity().stopService(mpService);
-
-        MediaPlayerService.setSong(trackToPlayList, trackIdx);
-        mpService.setAction(MediaPlayerService.ACTION_NEXT);
-        getActivity().startService(mpService);
-
-
-        // MediaPlayerService.getInstance().stopService(new Intent(getActivity(), MediaPlayerService.class));
-        // MediaPlayerService.setSong(trackToPlay.previewUrl, trackToPlay.mName, trackToPlay.largeThumbnailUrl);
-        //getActivity().startService(new Intent("PLAY"));
-
+        MediaPlayerService.playNextTrack(getActivity());
+        //MediaPlayerService.setSong(trackToPlayList, trackIdx);
+        //mpService.setAction(MediaPlayerService.ACTION_NEXT);
+        //getActivity().startService(mpService);
 
     }
 
@@ -312,12 +305,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             artistTv.setText(trackToPlay.mArtistName);
         }
 
-        Intent mpService = new Intent(getActivity(), MediaPlayerService.class);
-        getActivity().stopService(mpService);
-
-        MediaPlayerService.setSong(trackToPlayList, trackIdx);
-        mpService.setAction(MediaPlayerService.ACTION_PREVIOUS);
-        getActivity().startService(mpService);
+        MediaPlayerService.playPreviousTrack(getActivity());
 
 
     }

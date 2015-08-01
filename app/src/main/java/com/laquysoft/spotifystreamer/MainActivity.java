@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     private PlayerFragment playerFragment;
     private TopTenTracksFragment topTenTracksFragment;
 
+    private ArrayList<ParcelableSpotifyObject> trackList;
+    private int trackId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +77,11 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
     @Override
     public void onShowNowPlaying() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+        playerFragment = new PlayerFragment();
 
+        Bundle bundle = new Bundle();
+
+        playerFragment.setArguments(bundle);
         if (mTwoPane) {
             // The device is using a large layout, so show the topTenTracksFragment as a dialog
             playerFragment.show(fragmentManager, "dialog");
@@ -93,10 +99,15 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
     @Override
     public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx) {
+
+        MediaPlayerService.setTracks(this, selectedTrack);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        stopService(new Intent(this, MediaPlayerService.class));
         playerFragment = new PlayerFragment();
+
+        trackList = selectedTrack;
+        trackId = idx;
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(PlayerFragment.TRACK_INFO_KEY, selectedTrack);
