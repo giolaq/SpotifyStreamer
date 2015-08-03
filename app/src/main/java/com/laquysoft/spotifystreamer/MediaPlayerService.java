@@ -17,17 +17,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.laquysoft.spotifystreamer.common.MainThreadBus;
+import com.laquysoft.spotifystreamer.components.DaggerEventBusComponents;
+import com.laquysoft.spotifystreamer.components.EventBusComponents;
+import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
-import com.squareup.picasso.Picasso;
+import com.laquysoft.spotifystreamer.modules.EventBusModule;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Track;
+import javax.inject.Inject;
 
 /**
  * Created by joaobiriba on 06/07/15.
@@ -36,7 +36,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
 
-    public static final String TAG = MediaPlayerService.class.getSimpleName();
+    public static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
     /**
      * Implementation notes
@@ -68,10 +68,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     ArrayList<ParcelableSpotifyObject> mTracksList;
     int mCurrentTrackThumbnailBitmap;
 
+    @Inject
+    MainThreadBus bus;
+
     /**
      * Constructor
      */
     public MediaPlayerService() {
+        EventBusComponents component = DaggerEventBusComponents.builder().eventBusModule(new EventBusModule()).build();
+
+        bus = component.provideMainThreadBus();
+        bus.register(this);
+
     }
 
     /**
@@ -208,7 +216,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         //Request current track broadcast
         if (intent.getAction().equals(ACTION_BROADCAST_CURRENT_TRACK)) {
             //if (mCurrentTrack != null)
-                //broadcastTrackToBePlayed();
+            //broadcastTrackToBePlayed();
         }
 
         return START_NOT_STICKY;
@@ -272,7 +280,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         String trackUrl = mCurrentTrack.previewUrl;
 
         //Notify track to be played
-       // broadcastTrackToBePlayed();
+        // broadcastTrackToBePlayed();
 
         //Set current track in app
         //SpotifyStreamerApp app = (SpotifyStreamerApp) getApplication();
@@ -320,8 +328,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         if (mMediaPlayer == null)
             //broadcastTrackPlaybackCompleted();
 
-        if (mMediaPlayer.isPlaying())
-            mMediaPlayer.seekTo(progress);
+            if (mMediaPlayer.isPlaying())
+                mMediaPlayer.seekTo(progress);
     }
 
     /**
@@ -422,7 +430,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         //Thumbnail
         //String thumbnailUrl = Utils.getThumbnailUrl(mCurrentTrack.album.images, 0);
         //if (thumbnailUrl != null)
-          //  Picasso.with(this).load(thumbnailUrl).into(remoteView, R.id.album_thumbnail, NOTIFICATION_ID, notification);
+        //  Picasso.with(this).load(thumbnailUrl).into(remoteView, R.id.album_thumbnail, NOTIFICATION_ID, notification);
     }
 
     private void showNotificationUsingCompat() {
@@ -487,7 +495,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void showNotification() {
-        Log.d(TAG, "Displaying notification");
+        Log.d(LOG_TAG, "Displaying notification");
         showNotificationUsingCustomLayout();
         //showNotificationUsingCompat();
     }
@@ -511,11 +519,19 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 if (!mMediaPlayer.isPlaying())
                     return null;
 
-                //broadcastTrackPlayingProgress();
+                broadcastTrackPlayingProgress();
             }
 
             return null;
         }
+    }
+
+    private void broadcastTrackPlayingProgress() {
+        TrackPlayingEvent event = TrackPlayingEvent.newInstance(
+                mCurrentTrack,
+                mMediaPlayer.getCurrentPosition()
+        );
+        bus.post(event);
     }
 
 
@@ -524,13 +540,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        //broadcastTrackToBePlayed();
+        broadcastTrackPlayingProgress();
         resumeTrack();
     }
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-        Log.e(TAG, "Error during Playback!");
+        Log.e(LOG_TAG, "Error during Playback!");
         //Toast.makeText(this, R.string.playback_error, Toast.LENGTH_LONG).show();
         return false;
     }
@@ -539,5 +555,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public void onCompletion(MediaPlayer mediaPlayer) {
         //broadcastTrackPlaybackCompleted();
     }
+
 
 }

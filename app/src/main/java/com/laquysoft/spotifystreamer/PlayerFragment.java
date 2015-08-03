@@ -16,10 +16,19 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.laquysoft.spotifystreamer.common.MainThreadBus;
+import com.laquysoft.spotifystreamer.components.DaggerEventBusComponents;
+import com.laquysoft.spotifystreamer.components.EventBusComponents;
+import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
+import com.laquysoft.spotifystreamer.modules.EventBusModule;
+
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -65,7 +74,8 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     private int trackProgress = 0;
     private boolean mPlaying;
 
-
+    @Inject
+    MainThreadBus bus;
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -92,6 +102,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         bundle.putInt(PlayerFragment.TRACK_IDX_KEY, idx);
 
         fragment.setArguments(bundle);
+
         return fragment;
     }
 
@@ -145,6 +156,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusComponents component = DaggerEventBusComponents.builder().eventBusModule(new EventBusModule()).build();
+        bus = component.provideMainThreadBus();
+        bus.register(this);
 
         if (savedInstanceState == null) {
             trackToPlayList = getArguments().getParcelableArrayList(TRACK_INFO_KEY);
@@ -168,6 +182,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         ButterKnife.inject(this, rootView);
 
 
+
         playButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
@@ -181,25 +196,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         }
 
 
-        ParcelableSpotifyObject trackToPlay = trackToPlayList.get(trackIdx);
-        if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
-            Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
-        }
-
-        if (!trackToPlay.mName.isEmpty()) {
-            trackNameTv.setText(trackToPlay.mName);
-        }
-
-        if (!trackToPlay.mFatherName.isEmpty()) {
-            albumTv.setText(trackToPlay.mFatherName);
-        }
-
-        if (!trackToPlay.mArtistName.isEmpty()) {
-            artistTv.setText(trackToPlay.mArtistName);
-        }
-
-        mPlaying = true;
-        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
 
         MediaPlayerService.playTrack(getActivity(), trackIdx);
 
@@ -209,7 +205,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
-                    //MediaPlayerService.getInstance().seekMusicTo(300 * progress);
+                    MediaPlayerService.setTrackProgressTo(getActivity(), 300 * progress);
                 }
 
             }
@@ -348,4 +344,32 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 break;
         }
     }
+
+    @Subscribe
+    public void getTrackPlaying(TrackPlayingEvent trackPlayingEvent) {
+        Log.d(LOG_TAG, "Track progress " + trackPlayingEvent.getProgress());
+        ParcelableSpotifyObject trackToPlay =  trackPlayingEvent.getTrack();
+        if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
+            Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
+        }
+
+        if (!trackToPlay.mName.isEmpty()) {
+            trackNameTv.setText(trackToPlay.mName);
+        }
+
+        if (!trackToPlay.mFatherName.isEmpty()) {
+            albumTv.setText(trackToPlay.mFatherName);
+        }
+
+        if (!trackToPlay.mArtistName.isEmpty()) {
+            artistTv.setText(trackToPlay.mArtistName);
+        }
+
+        mPlaying = true;
+        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
+
+        scrubBar.setProgress(300*trackPlayingEvent.getProgress());
+
+    }
+
 }
