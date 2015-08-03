@@ -325,7 +325,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void setTrackProgressTo(int progress) {
-        if (mMediaPlayer == null)
+        //if (mMediaPlayer == null)
             //broadcastTrackPlaybackCompleted();
 
             if (mMediaPlayer.isPlaying())

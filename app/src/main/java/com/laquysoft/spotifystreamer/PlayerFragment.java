@@ -368,7 +368,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         mPlaying = true;
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
 
-        scrubBar.setProgress(300*trackPlayingEvent.getProgress());
+        scrubBar.setProgress(trackPlayingEvent.getProgress()/300);
 
     }
 
