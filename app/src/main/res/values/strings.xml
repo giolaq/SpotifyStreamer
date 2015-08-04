@@ -6,6 +6,7 @@
 
     <string name="track">Track</string>
     <string name="artist">Artist</string>
+    <string name="action_share">Share</string>
 
     <!-- Label for the country code preference [CHAR LIMIT=30] -->
     <string name="pref_country_code_label">Country Code</string>

@@ -6,8 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -77,6 +82,11 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Inject
     MainThreadBus bus;
+
+
+    private ShareActionProvider mShareActionProvider;
+    private ParcelableSpotifyObject trackToPlay;
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -90,6 +100,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     }
 
+    public PlayerFragment() {
+        setHasOptionsMenu(true);
+    }
     /**
      * Factory method
      */
@@ -254,7 +267,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Subscribe
     public void getTrackPlaying(TrackPlayingEvent trackPlayingEvent) {
-        ParcelableSpotifyObject trackToPlay =  trackPlayingEvent.getTrack();
+        trackToPlay =  trackPlayingEvent.getTrack();
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
@@ -281,7 +294,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Subscribe
     public void getTrackLoaded(TrackLoadedEvent trackLoadedEvent) {
-        ParcelableSpotifyObject trackToPlay =  trackLoadedEvent.getTrack();
+        trackToPlay =  trackLoadedEvent.getTrack();
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
@@ -301,6 +314,31 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         mPlaying = false;
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_playerfragment, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if (trackToPlay != null) {
+            mShareActionProvider.setShareIntent(createShareTrackIntent());
+        }
+    }
+
+    private Intent createShareTrackIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, trackToPlay.previewUrl);
+        return shareIntent;
     }
 
 }
