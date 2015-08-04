@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -24,6 +25,7 @@ import com.laquysoft.spotifystreamer.events.TrackLoadedEvent;
 import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.laquysoft.spotifystreamer.modules.EventBusModule;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -361,30 +363,33 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     private void showNotificationUsingCustomLayout() {
 
+
         //New Remote View
         RemoteViews remoteView = new RemoteViews(getPackageName(), R.layout.view_notification);
-        //remoteView.setTextViewText(R.id.track_name, mCurrentTrack.name);
-        //remoteView.setTextViewText(R.id.artist_name, mCurrentTrack.artists.get(0).name);
+        remoteView.setTextViewText(R.id.track_name, mCurrentTrack.mName);
+        remoteView.setTextViewText(R.id.artist_name, mCurrentTrack.mArtistName);
 
         //Playback controls
         //Previous Track Intent
         remoteView.setOnClickPendingIntent(
-                R.id.ib_rewind,
+                R.id.play_previous_track,
                 PendingIntent.getService(this, 0, getPlayPreviousTrackIntent(this), 0)
         );
 
         //Resume/Pause
-        remoteView.setViewVisibility(R.id.ib_play_pause, View.VISIBLE);
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-            remoteView.setViewVisibility(R.id.ib_play_pause, View.GONE);
+        remoteView.setViewVisibility(R.id.pause_track, View.VISIBLE);
+        remoteView.setViewVisibility(R.id.resume_track, View.VISIBLE);
+        if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+            remoteView.setViewVisibility(R.id.resume_track, View.GONE);
             remoteView.setOnClickPendingIntent(
-                    R.id.ib_play_pause,
+                    R.id.pause_track,
                     PendingIntent.getService(this, 0, getPauseTrackIntent(this), 0)
             );
-        } else {
-            remoteView.setViewVisibility(R.id.ib_play_pause, View.GONE);
+        }
+        else {
+            remoteView.setViewVisibility(R.id.pause_track, View.GONE);
             remoteView.setOnClickPendingIntent(
-                    R.id.ib_play_pause,
+                    R.id.resume_track,
                     PendingIntent.getService(this, 0, getResumeTrackIntent(this), 0)
             );
         }
@@ -392,7 +397,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         //Next Track Intent
         remoteView.setOnClickPendingIntent(
-                R.id.ib_fast_forward,
+                R.id.play_next_track,
                 PendingIntent.getService(this, 0, getPlayNextTrackIntent(this), 0)
         );
 
@@ -404,7 +409,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         PendingIntent showAppPendingIntent = PendingIntent.getActivity(this, 0, showAppIntent, 0);
 
         //Prepare notification
-        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new android.support.v4.app.NotificationCompat.Builder(this)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_media_play)
                 .setContent(remoteView)
                 .setContentIntent(showAppPendingIntent);
@@ -415,7 +420,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         //Show playback controls in lockscreen
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean showPlaybackControlsInLockScreen = sharedPreferences.getBoolean(PREF_SHOW_PLAYBACK_CONTROLS_IN_LOCKSCREEN, true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH && showPlaybackControlsInLockScreen) {
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH && showPlaybackControlsInLockScreen) {
             notificationBuilder.setVisibility(Notification.VISIBILITY_PUBLIC);
         }
 
@@ -425,9 +430,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         notificationManager.notify(NOTIFICATION_ID, notification);
 
         //Thumbnail
-        //String thumbnailUrl = Utils.getThumbnailUrl(mCurrentTrack.album.images, 0);
-        //if (thumbnailUrl != null)
-        //  Picasso.with(this).load(thumbnailUrl).into(remoteView, R.id.album_thumbnail, NOTIFICATION_ID, notification);
+        String thumbnailUrl = mCurrentTrack.largeThumbnailUrl;
+        if(thumbnailUrl != null)
+            Picasso.with(this).load(thumbnailUrl).into(remoteView, R.id.album_thumbnail, NOTIFICATION_ID, notification);
     }
 
     private void showNotificationUsingCompat() {
@@ -488,13 +493,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         notificationManager.notify(NOTIFICATION_ID, notification);
 
         //Show thumbnail if available
-        //String thumbnailUrl = Utils.getThumbnailUrl(mCurrentTrack.album.images, 0);
+        String thumbnailUrl = mCurrentTrack.largeThumbnailUrl;
     }
 
     private void showNotification() {
         Log.d(LOG_TAG, "Displaying notification");
         showNotificationUsingCustomLayout();
-        //showNotificationUsingCompat();
+        showNotificationUsingCompat();
     }
 
 

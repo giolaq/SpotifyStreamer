@@ -4,6 +4,9 @@
     <string name="action_now_playing">Now Playing</string>
     <string name="action_settings">Settings</string>
 
+    <string name="track">Track</string>
+    <string name="artist">Artist</string>
+
     <!-- Label for the country code preference [CHAR LIMIT=30] -->
     <string name="pref_country_code_label">Country Code</string>
 

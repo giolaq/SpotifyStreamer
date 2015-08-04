@@ -1,56 +1,86 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:background="@color/teal"
+    android:layout_height="64dp">
 
     <ImageView
-        android:id="@+id/large_icon"
-        android:layout_width="@dimen/notification_expanded_height"
-        android:layout_height="@dimen/notification_expanded_height"
-        android:src="@drawable/music"
-        android:scaleType="fitXY"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        />
+        android:id="@+id/album_thumbnail"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="12dp"
+        android:background="@color/white"/>
+
     <LinearLayout
-        android:id="@+id/buttons_row"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/large_icon"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:layout_weight="1">
 
-        <ImageButton
-            android:id="@+id/ib_rewind"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/notification_button_height"
-            android:scaleType="fitCenter" />
+        <TextView
+            android:id="@+id/track_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="@string/track"/>
 
-        <ImageButton
-            android:id="@+id/ib_play_pause"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/notification_button_height"
-            android:scaleType="fitCenter" />
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="@string/artist"/>
 
-        <ImageButton
-            android:id="@+id/ib_fast_forward"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/notification_button_height"
-            android:scaleType="fitCenter" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/app_name"
-        android:textSize="@dimen/notification_text_size"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_toRightOf="@+id/large_icon"
-        android:layout_above="@+id/buttons_row"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="1">
 
-</RelativeLayout>
+        <ImageButton
+            android:id="@+id/play_previous_track"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_media_previous"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <ImageButton
+            android:id="@+id/resume_track"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_media_play"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <ImageButton
+            android:id="@+id/pause_track"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_media_pause"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <ImageButton
+            android:id="@+id/play_next_track"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_media_next"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+    </LinearLayout>
+
+</LinearLayout>

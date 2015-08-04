@@ -207,7 +207,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.i(LOG_TAG, "Progress " + progress);
                 if (fromUser) {
                     MediaPlayerService.setTrackProgressTo(getActivity(), 300 * progress);
                 }
@@ -294,7 +293,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Subscribe
     public void getTrackPlaying(TrackPlayingEvent trackPlayingEvent) {
-        Log.d(LOG_TAG, "Track progress " + trackPlayingEvent.getProgress());
         ParcelableSpotifyObject trackToPlay =  trackPlayingEvent.getTrack();
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
