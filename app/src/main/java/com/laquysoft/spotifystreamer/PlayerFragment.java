@@ -17,8 +17,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.laquysoft.spotifystreamer.common.MainThreadBus;
-import com.laquysoft.spotifystreamer.components.DaggerEventBusComponents;
-import com.laquysoft.spotifystreamer.components.EventBusComponents;
+import com.laquysoft.spotifystreamer.components.DaggerEventBusComponent;
+import com.laquysoft.spotifystreamer.components.EventBusComponent;
 import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.laquysoft.spotifystreamer.modules.EventBusModule;
@@ -44,7 +44,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     public static final String TRACK_IDX_KEY = "selectedTrackIdx";
 
     private ArrayList<ParcelableSpotifyObject> trackToPlayList;
-    int trackIdx;
+    int trackIdx = -1;
 
     @InjectView(R.id.albumThumbIm)
     ImageView trackAlbumThumbnail;
@@ -156,7 +156,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBusComponents component = DaggerEventBusComponents.builder().eventBusModule(new EventBusModule()).build();
+        EventBusComponent component = DaggerEventBusComponent.builder().eventBusModule(new EventBusModule()).build();
         bus = component.provideMainThreadBus();
         bus.register(this);
 
@@ -197,7 +197,9 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
 
 
-        MediaPlayerService.playTrack(getActivity(), trackIdx);
+        if ( trackIdx != -1) {
+            MediaPlayerService.playTrack(getActivity(), trackIdx);
+        }
 
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

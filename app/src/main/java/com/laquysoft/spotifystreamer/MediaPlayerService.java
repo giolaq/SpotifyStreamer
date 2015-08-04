@@ -18,8 +18,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.laquysoft.spotifystreamer.common.MainThreadBus;
-import com.laquysoft.spotifystreamer.components.DaggerEventBusComponents;
-import com.laquysoft.spotifystreamer.components.EventBusComponents;
+import com.laquysoft.spotifystreamer.components.DaggerEventBusComponent;
+import com.laquysoft.spotifystreamer.components.EventBusComponent;
 import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.laquysoft.spotifystreamer.modules.EventBusModule;
@@ -75,7 +75,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      * Constructor
      */
     public MediaPlayerService() {
-        EventBusComponents component = DaggerEventBusComponents.builder().eventBusModule(new EventBusModule()).build();
+        EventBusComponent component = DaggerEventBusComponent.builder().eventBusModule(new EventBusModule()).build();
 
         bus = component.provideMainThreadBus();
         bus.register(this);

@@ -12,6 +12,6 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {EventBusModule.class})
-public interface EventBusComponents {
+public interface EventBusComponent {
     MainThreadBus provideMainThreadBus();
 }

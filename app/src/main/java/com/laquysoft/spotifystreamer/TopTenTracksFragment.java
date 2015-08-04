@@ -11,11 +11,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.laquysoft.spotifystreamer.components.DaggerSpotifyServiceComponent;
+import com.laquysoft.spotifystreamer.components.SpotifyServiceComponent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
+import com.laquysoft.spotifystreamer.modules.SpotifyServiceModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -38,6 +43,9 @@ public class TopTenTracksFragment extends Fragment {
     private String mSpotifyId;
 
     private int mSelectedTrackIdx;
+
+    @Inject
+    SpotifyService spotifyService;
 
 
     @Override
@@ -129,18 +137,16 @@ public class TopTenTracksFragment extends Fragment {
                 return null;
             }
 
+            SpotifyServiceComponent component = DaggerSpotifyServiceComponent.builder().spotifyServiceModule(new SpotifyServiceModule()).build();
 
-            SpotifyApi api = new SpotifyApi();
-
-
-            SpotifyService spotify = api.getService();
+            spotifyService = component.provideSpotifyService();
 
             Map<String, Object> country = new HashMap<String, Object>();
             String locale = getActivity().getResources().getConfiguration().locale.getCountry();
             country.put("country", locale);
 
             try {
-                return spotify.getArtistTopTrack(params[0], country);
+                return spotifyService.getArtistTopTrack(params[0], country);
 
             } catch (RetrofitError error) {
                 retrofitError = error;

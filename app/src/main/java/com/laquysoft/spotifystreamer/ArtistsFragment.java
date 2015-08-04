@@ -20,10 +20,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.laquysoft.spotifystreamer.components.DaggerSpotifyServiceComponent;
+import com.laquysoft.spotifystreamer.components.SpotifyServiceComponent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
+import com.laquysoft.spotifystreamer.modules.SpotifyServiceModule;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -47,6 +52,9 @@ public class ArtistsFragment extends Fragment {
     @InjectView(R.id.search_artist)
     SearchView artistSearchView;
 
+
+    @Inject
+    SpotifyService spotifyService;
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -67,6 +75,9 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SpotifyServiceComponent component = DaggerSpotifyServiceComponent.builder().spotifyServiceModule(new SpotifyServiceModule()).build();
+
+        spotifyService = component.provideSpotifyService();
         Intent intent = getActivity().getIntent();
 
         if (savedInstanceState != null) {
@@ -150,17 +161,8 @@ public class ArtistsFragment extends Fragment {
                 return null;
             }
 
-
-            SpotifyApi api = new SpotifyApi();
-
-// Most (but not all) of the Spotify Web API endpoints require authorisation.
-// If you know you'll only use the ones that don't require authorisation you can skip this step
-            // api.setAccessToken("myAccessToken");
-
-            SpotifyService spotify = api.getService();
-
             try {
-                ArtistsPager artistsPager = spotify.searchArtists(params[0]);
+                ArtistsPager artistsPager = spotifyService.searchArtists(params[0]);
                 return artistsPager.artists.items;
 
             } catch (RetrofitError error) {
