@@ -127,21 +127,5 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
     }
 
-    @Override
-    public void onNext() {
-        playerFragment.onNext();
-
-    }
-
-    @Override
-    public void onPrevious() {
-        playerFragment.onPrevious();
-
-
-    }
-
-    public void play(View w) {
-        playerFragment.play(w);
-    }
 
 }

@@ -86,35 +86,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
         transaction.add(android.R.id.content, playerFragment, "PlayerFragment")
                 .addToBackStack(null).commit();
 
-
     }
 
-    @Override
-    public void onNext() {
-        playerFragment.onNext();
-    }
-
-    @Override
-    public void onPrevious() {
-        playerFragment.onPrevious();
-    }
-
-    public void play(View w) {
-        playerFragment.play(w);
-    }
-
-    public void previous(View w) {
-        topTenTracksFragment.loadPrevious();
-    }
-
-    public void next(View w) {
-        topTenTracksFragment.loadNext();
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        playerFragment.stop();
-    }
 }

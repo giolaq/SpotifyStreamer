@@ -84,13 +84,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
      */
     public interface PlayerCallback {
         /**
-         * DetailFragmentCallback for when an item has been selected.
+         * PlayerCallback for when an item has been selected.
          */
         public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx);
 
-        public void onNext();
-
-        public void onPrevious();
     }
 
     /**
@@ -105,36 +102,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         fragment.setArguments(bundle);
 
         return fragment;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //getActivity().registerReceiver(broadcastReceiver, new IntentFilter(MediaPlayerService.BROADCAST_ACTION));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //getActivity().unregisterReceiver(broadcastReceiver);
-    }
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateUI(intent);
-        }
-    };
-
-    private void updateUI(Intent intent) {
-        int mPlayerTrackPosition = intent.getIntExtra("mPlayerTrackPosition", 0);
-        scrubBar.setProgress(mPlayerTrackPosition / 300);
-        //if (MediaPlayerService.getInstance().isPlaying()) {
-        playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
-        //} else {
-        //    playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_play, 0, 0, 0);
-        //}
     }
 
     /**
@@ -199,9 +166,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             MediaPlayerService.broadcastCurrentTrack(getActivity());
 
         }
-
-
-
 
 
         scrubBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -270,9 +234,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void stop() {
-        //mediaPlayer.reset();
-    }
 
     @Override
     public void onClick(View v) {
@@ -281,10 +242,10 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
                 play(v);
                 break;
             case R.id.previous_button:
-                ((PlayerCallback) getActivity()).onPrevious();
+                onPrevious();
                 break;
             case R.id.next_button:
-                ((PlayerCallback) getActivity()).onNext();
+                onNext();
                 break;
             default:
                 break;
