@@ -20,6 +20,7 @@ import android.widget.RemoteViews;
 import com.laquysoft.spotifystreamer.common.MainThreadBus;
 import com.laquysoft.spotifystreamer.components.DaggerEventBusComponent;
 import com.laquysoft.spotifystreamer.components.EventBusComponent;
+import com.laquysoft.spotifystreamer.events.TrackLoadedEvent;
 import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.laquysoft.spotifystreamer.modules.EventBusModule;
@@ -215,8 +216,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         //Request current track broadcast
         if (intent.getAction().equals(ACTION_BROADCAST_CURRENT_TRACK)) {
-            //if (mCurrentTrack != null)
-            //broadcastTrackToBePlayed();
+            if (mCurrentTrack != null)
+                broadcastTrackToBePlayed();
         }
 
         return START_NOT_STICKY;
@@ -280,11 +281,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         String trackUrl = mCurrentTrack.previewUrl;
 
         //Notify track to be played
-        // broadcastTrackToBePlayed();
-
-        //Set current track in app
-        //SpotifyStreamerApp app = (SpotifyStreamerApp) getApplication();
-        //app.setCurrentTrack(mCurrentTrack);
+        broadcastTrackToBePlayed();
 
         //Start Media Player
         mMediaPlayer = new MediaPlayer();
@@ -326,21 +323,21 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private void setTrackProgressTo(int progress) {
         //if (mMediaPlayer == null)
-            //broadcastTrackPlaybackCompleted();
+        //broadcastTrackPlaybackCompleted();
 
-            if (mMediaPlayer.isPlaying())
-                mMediaPlayer.seekTo(progress);
+        if (mMediaPlayer.isPlaying())
+            mMediaPlayer.seekTo(progress);
     }
 
     /**
      * Player broadcasts
      */
-//    private void broadcastTrackToBePlayed() {
-//        TrackToBePlayedEvent event = new TrackToBePlayedEvent(mCurrentTrack);
-//        EventBus.getDefault().post(event);
-//
-//        showNotification();
-//    }
+    private void broadcastTrackToBePlayed() {
+        TrackLoadedEvent event = new TrackLoadedEvent(mCurrentTrack);
+        bus.post(event);
+
+        showNotification();
+    }
 //
 //    private void broadcastTrackPlayingProgress() {
 //        TrackPlayingProgressEvent event = TrackPlayingProgressEvent.newInstance(

@@ -91,14 +91,12 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
     @Override
     public void onNext() {
-        ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadNext();
-        playerFragment.onNext(selectedTrack);
+        playerFragment.onNext();
     }
 
     @Override
     public void onPrevious() {
-        ParcelableSpotifyObject selectedTrack = topTenTracksFragment.loadPrevious();
-        playerFragment.onPrevious(selectedTrack);
+        playerFragment.onPrevious();
     }
 
     public void play(View w) {
