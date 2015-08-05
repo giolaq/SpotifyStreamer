@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditTextPreference
-        android:title="@string/pref_country_code_label"
+    <ListPreference
         android:key="@string/pref_country_code_key"
-        android:defaultValue="@string/pref_country_code_default"
-        android:inputType="text"
-        android:singleLine="true" />
+        android:title="@string/pref_country_code_label"
+        android:entries="@array/pref_country_entries"
+        android:entryValues="@array/pref_country_entryValues"
+        android:defaultValue="US"/>
 
     <CheckBoxPreference
         android:title="@string/pref_enable_notifications_label"

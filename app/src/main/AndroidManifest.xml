@@ -30,6 +30,7 @@
                 android:value="com.laquysoft.spotifystreamer.MainActivity" />>
         </activity>
 
+        <activity android:name=".SettingsActivity"></activity>
         <service
             android:name="com.laquysoft.spotifystreamer.MediaPlayerService"
             android:icon="@mipmap/ic_launcher"

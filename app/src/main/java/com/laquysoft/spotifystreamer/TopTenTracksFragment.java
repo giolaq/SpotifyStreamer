@@ -1,7 +1,9 @@
 package com.laquysoft.spotifystreamer;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +24,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.Track;
@@ -86,7 +87,7 @@ public class TopTenTracksFragment extends Fragment {
                         " small Thumbnail url " + smallThumbnailUrl +
                         " previewUrl " + previewUrl);
                 ((PlayerFragment.PlayerCallback) getActivity())
-                        .onItemSelected(trackArrayList,mSelectedTrackIdx);
+                        .onItemSelected(trackArrayList, mSelectedTrackIdx);
 
             }
         });
@@ -141,9 +142,14 @@ public class TopTenTracksFragment extends Fragment {
 
             spotifyService = component.provideSpotifyService();
 
-            Map<String, Object> country = new HashMap<String, Object>();
-            String locale = getActivity().getResources().getConfiguration().locale.getCountry();
-            country.put("country", locale);
+
+            //Get Country for results preference
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String default_locale = getActivity().getResources().getConfiguration().locale.getCountry();
+
+            Map<String, Object> country = new HashMap<>();
+            country.put("country", sharedPreferences.getString(
+                    getResources().getString(R.string.pref_country_code_key), default_locale));
 
             try {
                 return spotifyService.getArtistTopTrack(params[0], country);
