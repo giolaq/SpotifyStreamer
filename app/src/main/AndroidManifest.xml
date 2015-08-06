@@ -35,7 +35,6 @@
             android:name="com.laquysoft.spotifystreamer.MediaPlayerService"
             android:icon="@mipmap/ic_launcher"
             android:label="MediaPlayer" >
-        <intent-filter><action android:name="PLAY"/></intent-filter>
         </service>
     </application>
 

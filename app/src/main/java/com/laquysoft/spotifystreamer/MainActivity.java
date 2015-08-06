@@ -17,10 +17,6 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
 
     private boolean mTwoPane;
     private PlayerFragment playerFragment;
-    private TopTenTracksFragment topTenTracksFragment;
-
-    private ArrayList<ParcelableSpotifyObject> trackList;
-    private int trackId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
             args.putString("artistId", spotifyId);
             args.putString("artist", "bo");
 
-            topTenTracksFragment = new TopTenTracksFragment();
+            TopTenTracksFragment topTenTracksFragment = new TopTenTracksFragment();
             topTenTracksFragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
@@ -103,10 +99,6 @@ public class MainActivity extends AppCompatActivity implements ArtistsFragment.C
         MediaPlayerService.setTracks(this, selectedTrack);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-
-
-        trackList = selectedTrack;
-        trackId = idx;
 
         playerFragment = PlayerFragment.newInstance(selectedTrack, idx);
 

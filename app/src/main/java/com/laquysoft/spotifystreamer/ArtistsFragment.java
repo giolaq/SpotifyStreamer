@@ -64,9 +64,9 @@ public class ArtistsFragment extends Fragment {
         /**
          * ArtistFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(String id, String name);
+        void onItemSelected(String id, String name);
 
-        public void onShowNowPlaying();
+        void onShowNowPlaying();
     }
 
     public ArtistsFragment() {

@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/artistTv"
@@ -15,7 +15,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:text="Artist"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -24,7 +23,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/artistTv"
             android:layout_centerHorizontal="true"
-            android:text="Album"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ImageView
@@ -33,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/albumTv"
             android:layout_centerHorizontal="true"
+            android:contentDescription="@string/album_image"
             android:src="@drawable/music" />
 
         <SeekBar
@@ -73,7 +72,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
             android:id="@+id/trackNameTv"
             android:layout_below="@+id/albumThumbIm"
             android:layout_centerHorizontal="true"

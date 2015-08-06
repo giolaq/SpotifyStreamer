@@ -14,29 +14,28 @@
         android:id="@+id/thumbnail"
         android:layout_width="@dimen/thumbnail_size"
         android:layout_height="@dimen/thumbnail_size"
-        android:contentDescription="Artist Image"
+        android:contentDescription="@string/artist_image"
         android:src="@android:drawable/btn_star" />
 
     <TextView
         android:id="@+id/list_item_first_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/thumbnail"
+        android:layout_toEndOf="@id/thumbnail"
         android:gravity="center"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="First" />
+         />
 
     <TextView
         android:id="@+id/list_item_second_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list_item_first_textview"
-        android:layout_toRightOf="@id/thumbnail"
+        android:layout_toEndOf="@id/thumbnail"
         android:gravity="center"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="Second"
         android:visibility="gone" />
 </RelativeLayout>

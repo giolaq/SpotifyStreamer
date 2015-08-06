@@ -1,14 +1,11 @@
 package com.laquysoft.spotifystreamer;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +25,6 @@ import com.laquysoft.spotifystreamer.events.TrackLoadedEvent;
 import com.laquysoft.spotifystreamer.events.TrackPlayingEvent;
 import com.laquysoft.spotifystreamer.model.ParcelableSpotifyObject;
 import com.laquysoft.spotifystreamer.modules.EventBusModule;
-
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -83,8 +79,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
     @Inject
     MainThreadBus bus;
 
-
-    private ShareActionProvider mShareActionProvider;
     private ParcelableSpotifyObject trackToPlay;
 
     /**
@@ -96,13 +90,14 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         /**
          * PlayerCallback for when an item has been selected.
          */
-        public void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx);
+        void onItemSelected(ArrayList<ParcelableSpotifyObject> selectedTrack, int idx);
 
     }
 
     public PlayerFragment() {
         setHasOptionsMenu(true);
     }
+
     /**
      * Factory method
      */
@@ -163,7 +158,6 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         ButterKnife.inject(this, rootView);
 
 
-
         playButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
@@ -172,7 +166,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
             trackToPlayList = getArguments().getParcelableArrayList(TRACK_INFO_KEY);
             trackIdx = getArguments().getInt(TRACK_IDX_KEY, -1);
 
-            if ( trackIdx != -1) {
+            if (trackIdx != -1) {
                 MediaPlayerService.playTrack(getActivity(), trackIdx);
             }
         } else {
@@ -267,7 +261,7 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Subscribe
     public void getTrackPlaying(TrackPlayingEvent trackPlayingEvent) {
-        trackToPlay =  trackPlayingEvent.getTrack();
+        trackToPlay = trackPlayingEvent.getTrack();
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
@@ -287,14 +281,14 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
         mPlaying = true;
         playButton.setCompoundDrawablesRelativeWithIntrinsicBounds(android.R.drawable.ic_media_pause, 0, 0, 0);
 
-        scrubBar.setProgress(trackPlayingEvent.getProgress()/300);
+        scrubBar.setProgress(trackPlayingEvent.getProgress() / 300);
 
     }
 
 
     @Subscribe
     public void getTrackLoaded(TrackLoadedEvent trackLoadedEvent) {
-        trackToPlay =  trackLoadedEvent.getTrack();
+        trackToPlay = trackLoadedEvent.getTrack();
         if (!trackToPlay.largeThumbnailUrl.isEmpty()) {
             Picasso.with(getActivity()).load(trackToPlay.largeThumbnailUrl).into(trackAlbumThumbnail);
         }
@@ -318,14 +312,18 @@ public class PlayerFragment extends DialogFragment implements View.OnClickListen
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_playerfragment, menu);
+
 
         // Retrieve the share menu item
         MenuItem menuItem = menu.findItem(R.id.action_share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
         if (trackToPlay != null) {

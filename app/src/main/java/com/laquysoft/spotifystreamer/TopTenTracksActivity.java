@@ -19,8 +19,6 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
     private String mArtistName;
     private String mSpotifyId;
-    private PlayerFragment playerFragment;
-    private TopTenTracksFragment topTenTracksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +32,8 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
         }
         setContentView(R.layout.activity_top10);
+
+        TopTenTracksFragment topTenTracksFragment;
 
         if (savedInstanceState == null) {
 
@@ -74,7 +74,7 @@ public class TopTenTracksActivity extends AppCompatActivity implements PlayerFra
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        playerFragment = PlayerFragment.newInstance(selectedTrack, idx);
+        PlayerFragment playerFragment = PlayerFragment.newInstance(selectedTrack, idx);
 
 
         // The device is smaller, so show the fragment fullscreen
