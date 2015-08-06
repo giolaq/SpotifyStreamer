@@ -41,11 +41,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
-    /**
-     * Implementation notes
-     * https://discussions.udacity.com/t/returning-to-the-song-currently-playing/21779/3
-     * http://developer.android.com/guide/topics/media/mediaplayer.html#mpandservices
-     */
     //Available Actions
     public static final String ACTION_PLAY_TRACK = "action_play_track";
     public static final String ACTION_PAUSE_TRACK = "action_pause_track";
@@ -69,7 +64,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     MediaPlayer mMediaPlayer;
     BroadcastTrackProgressTask mBroadcastTrackProgressTask;
     ArrayList<ParcelableSpotifyObject> mTracksList;
-    int mCurrentTrackThumbnailBitmap;
 
     @Inject
     MainThreadBus bus;
@@ -225,15 +219,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         return START_NOT_STICKY;
     }
 
-//    private Track getTrackById(String trackId) {
-//        for (Track track : mTracksList) {
-//            if (track.id.equals(trackId))
-//                return track;
-//        }
-//
-//        //Should not happen
-//        return null;
-//    }
 
     private void setTracks(Intent data) {
 
@@ -278,7 +263,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         stopPlayback();
 
         //Get track
-        mCurrentTrack = mTracksList.get(trackId); //getTrackById(trackId);
+        mCurrentTrack = mTracksList.get(trackId);
         mCurrentTrackIndex = mTracksList.indexOf(mCurrentTrack);
         String trackUrl = mCurrentTrack.previewUrl;
 
@@ -324,9 +309,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void setTrackProgressTo(int progress) {
-        //if (mMediaPlayer == null)
-        //broadcastTrackPlaybackCompleted();
-
         if (mMediaPlayer.isPlaying())
             mMediaPlayer.seekTo(progress);
     }
@@ -340,23 +322,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
         showNotification();
     }
-//
-//    private void broadcastTrackPlayingProgress() {
-//        TrackPlayingProgressEvent event = TrackPlayingProgressEvent.newInstance(
-//                mCurrentTrack,
-//                mMediaPlayer.getCurrentPosition(),
-//                mMediaPlayer.getDuration()
-//        );
-//        EventBus.getDefault().post(event);
-//    }
-//
-//    private void broadcastTrackPlaybackCompleted() {
-//        TrackPlaybackCompletedEvent event = new TrackPlaybackCompletedEvent(mCurrentTrack);
-//        EventBus.getDefault().post(event);
-//
-//        showNotification();
-//    }
-
 
     /**
      * Notifications
@@ -435,71 +400,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             Picasso.with(this).load(thumbnailUrl).into(remoteView, R.id.album_thumbnail, NOTIFICATION_ID, notification);
     }
 
-    private void showNotificationUsingCompat() {
 
-        //Build notification
-        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
-        notificationBuilder.setContentTitle(mCurrentTrack.mName);
-        notificationBuilder.setContentText(mCurrentTrack.mArtistName);
-        notificationBuilder.setSmallIcon(android.R.drawable.ic_media_play);
-
-        //Show playback controls in lockscreen
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean showPlaybackControlsInLockScreen = sharedPreferences.getBoolean(PREF_SHOW_PLAYBACK_CONTROLS_IN_LOCKSCREEN, true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH && showPlaybackControlsInLockScreen) {
-            notificationBuilder.setVisibility(Notification.VISIBILITY_PUBLIC);
-        }
-
-        //Playback controls
-        //Previous track action
-        notificationBuilder.addAction(
-                android.R.drawable.ic_media_previous,
-                "Previous",
-                PendingIntent.getService(this, 0, getPlayPreviousTrackIntent(this), 0)
-        );
-        //Pause / Resume track action
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-            notificationBuilder.addAction(
-                    android.R.drawable.ic_media_pause,
-                    "Pause",
-                    PendingIntent.getService(this, 0, getPauseTrackIntent(this), 0)
-            );
-        } else {
-            notificationBuilder.addAction(
-                    android.R.drawable.ic_media_play,
-                    "Resume",
-                    PendingIntent.getService(this, 0, getResumeTrackIntent(this), 0)
-            );
-        }
-        //Next track action
-        notificationBuilder.addAction(
-                android.R.drawable.ic_media_next,
-                "Next",
-                PendingIntent.getService(this, 0, getPlayNextTrackIntent(this), 0)
-        );
-
-        //Check if ongoing notification
-        notificationBuilder.setOngoing(mMediaPlayer != null && mMediaPlayer.isPlaying());
-
-        //Show App Intent
-        Intent showAppIntent = new Intent(this, MainActivity.class);
-        showAppIntent.setAction(Intent.ACTION_MAIN);
-        showAppIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, showAppIntent, 0));
-
-        //Display notification
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notification = notificationBuilder.build();
-        notificationManager.notify(NOTIFICATION_ID, notification);
-
-        //Show thumbnail if available
-        String thumbnailUrl = mCurrentTrack.largeThumbnailUrl;
-    }
 
     private void showNotification() {
         Log.d(LOG_TAG, "Displaying notification");
         showNotificationUsingCustomLayout();
-        showNotificationUsingCompat();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+
     }
 
 
@@ -537,9 +447,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
 
-    /**
-     * MediaPlayer implementation
-     */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         broadcastTrackPlayingProgress();
@@ -549,13 +456,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
         Log.e(LOG_TAG, "Error during Playback!");
-        //Toast.makeText(this, R.string.playback_error, Toast.LENGTH_LONG).show();
         return false;
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        //broadcastTrackPlaybackCompleted();
     }
 
 

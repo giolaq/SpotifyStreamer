@@ -37,7 +37,7 @@ public class TopTenTracksFragment extends Fragment {
 
     private static final String LOG_TAG = TopTenTracksFragment.class.getSimpleName();
 
-    private TracksAdapter mTracksAdapter;
+    private SpotifyObjectAdapter mTracksAdapter;
 
     private ArrayList<ParcelableSpotifyObject> trackArrayList;
 
@@ -65,7 +65,7 @@ public class TopTenTracksFragment extends Fragment {
 
         // The TracksAdapter will take data from a source and
         // use it to populate the ListView it's attached to.
-        mTracksAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, trackArrayList, TracksAdapter.VIEW_TYPE_TOP_TRACK);
+        mTracksAdapter = new SpotifyObjectAdapter(getActivity(), R.layout.list_item_artist, trackArrayList, SpotifyObjectAdapter.VIEW_TYPE_TOP_TRACK);
 
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);

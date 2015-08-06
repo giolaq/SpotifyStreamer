@@ -19,7 +19,7 @@ import butterknife.InjectView;
 /**
  * Created by joaobiriba on 12/06/15.
  */
-public class TracksAdapter extends ArrayAdapter<ParcelableSpotifyObject> {
+public class SpotifyObjectAdapter extends ArrayAdapter<ParcelableSpotifyObject> {
 
 
     private int mObjectType;
@@ -71,8 +71,8 @@ public class TracksAdapter extends ArrayAdapter<ParcelableSpotifyObject> {
     }
 
 
-    public TracksAdapter(Context context, int resource,
-                         List<ParcelableSpotifyObject> tracks, int objectType) {
+    public SpotifyObjectAdapter(Context context, int resource,
+                                List<ParcelableSpotifyObject> tracks, int objectType) {
         super(context, resource, tracks);
         mObjectType = objectType;
     }

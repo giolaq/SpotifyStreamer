@@ -44,7 +44,7 @@ public class ArtistsFragment extends Fragment {
 
     private final String LOG_TAG = ArtistsFragment.class.getSimpleName();
 
-    private TracksAdapter mArtistsAdapter;
+    private SpotifyObjectAdapter mArtistsAdapter;
 
     private ArrayList<ParcelableSpotifyObject> artistArrayList;
 
@@ -86,8 +86,8 @@ public class ArtistsFragment extends Fragment {
             artistArrayList = new ArrayList<ParcelableSpotifyObject>();
         }
 
-        mArtistsAdapter = new TracksAdapter(getActivity(), R.layout.list_item_artist, artistArrayList,
-                TracksAdapter.VIEW_TYPE_ARTIST);
+        mArtistsAdapter = new SpotifyObjectAdapter(getActivity(), R.layout.list_item_artist, artistArrayList,
+                SpotifyObjectAdapter.VIEW_TYPE_ARTIST);
 
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
